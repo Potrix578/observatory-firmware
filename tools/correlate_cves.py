@@ -201,7 +201,7 @@ def correlate(analysis, tarball, cache, triage_rules):
         entry["openwrt_files"] = sorted(mentions.get(entry["cve"], []))
         verdict = triage.get(entry["cve"], {})
         entry["status"] = verdict.get("status", "possibly_affected")
-        entry["reason"] = verdict.get("reason", "Sem triagem manual.")
+        entry["reason"] = verdict.get("reason", "No manual review.")
 
     return {
         "release": release,
@@ -232,7 +232,7 @@ if __name__ == "__main__":
     analysis_path, tarball, cache_dir, output, triage_path = sys.argv[1:6]
     cache = Path(cache_dir)
     cache.mkdir(parents=True, exist_ok=True)
-    # A device without manual review has every finding as "Por confirmar".
+    # A device without manual review has every finding as "To confirm".
     rules = json.loads(Path(triage_path).read_text(encoding="utf-8")) if Path(triage_path).exists() else {}
     result = correlate(json.loads(Path(analysis_path).read_text()), tarball, cache, rules)
     Path(output).write_text(json.dumps(result, indent=1))

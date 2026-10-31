@@ -20,11 +20,11 @@ SEVERE_SCORE = 7.0
 OUTSIDE = ("not_compiled", "optional_module", "function_not_compiled")
 REVIEW = ("shared_header", "driver_fork", "path_unverified", "no_file_data", "not_linux_cna")
 CATEGORY_LABELS = {
-    "fixed_in_version": "Corrigido",
-    "not_compiled": "Não compilado",
-    "optional_module": "Módulo opcional",
-    "function_not_compiled": "Função não compilada",
-    **{category: "Por rever" for category in REVIEW},
+    "fixed_in_version": "Fixed",
+    "not_compiled": "Not compiled",
+    "optional_module": "Optional module",
+    "function_not_compiled": "Function not compiled",
+    **{category: "To review" for category in REVIEW},
 }
 FONT_BLOCK = re.compile(r"<!--FONTS-->.*?<!--/FONTS-->\n", re.S)
 LOCAL_FONTS = (
@@ -38,11 +38,11 @@ FONT_FACES = "<style>\n" + "\n".join(
     for family, weight, stem in LOCAL_FONTS
 ) + "\n</style>\n"
 DOCUMENT = """<!doctype html>
-<html lang="pt-PT">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="O que muda em cada router quando o firmware OpenWrt é atualizado.">
+<meta name="description" content="What changes on each router when you update OpenWrt firmware.">
 {head}
 </head>
 <body>
@@ -77,7 +77,7 @@ class Release:
     def state(self, cve):
         finding = self.findings.get(cve)
         if finding is None:
-            return "Não listado"
+            return "Not listed"
         if finding["category"] in ACTIVE_CATEGORIES or cve in self.verdicts:
             return STATUS_LABELS[self.status(finding)]
         return CATEGORY_LABELS[finding["category"]]
@@ -180,14 +180,14 @@ def image_changes(old, new):
         "facts": [
             {"label": "Kernel", "old": old.kernel["version"], "new": new.kernel["version"]},
             {"label": "Wi-Fi (backports)", "old": old.kernel["backports_version"], "new": new.kernel["backports_version"]},
-            {"label": "Gestor de pacotes", "old": old_a["package_manager"], "new": new_a["package_manager"]},
-            {"label": "Pacotes instalados", "old": len(old_p), "new": len(new_p)},
-            {"label": "Programas PIE", "old": f"{old_h['pie']} de {old_h['programs']}", "new": f"{new_h['pie']} de {new_h['programs']}"},
-            {"label": "Marcados NX", "old": f"{old_h['nx']} de {old_h['userland']}", "new": f"{new_h['nx']} de {new_h['userland']}"},
-            {"label": "Full RELRO", "old": f"{old_h['full_relro']} de {old_h['userland']}", "new": f"{new_h['full_relro']} de {new_h['userland']}"},
-            {"label": "Com canário de pilha", "old": f"{old_h['canary']} de {old_h['userland']}", "new": f"{new_h['canary']} de {new_h['userland']}"},
-            {"label": "Ficheiros setuid ou setgid", "old": sum(1 for f in old_a["files"].values() if f.get("setuid")), "new": sum(1 for f in new_a["files"].values() if f.get("setuid"))},
-            {"label": "Candidatos a segredos", "old": len(old_a["secret_candidates"]), "new": len(new_a["secret_candidates"])},
+            {"label": "Package manager", "old": old_a["package_manager"], "new": new_a["package_manager"]},
+            {"label": "Installed packages", "old": len(old_p), "new": len(new_p)},
+            {"label": "PIE programs", "old": f"{old_h['pie']} of {old_h['programs']}", "new": f"{new_h['pie']} of {new_h['programs']}"},
+            {"label": "Marked NX", "old": f"{old_h['nx']} of {old_h['userland']}", "new": f"{new_h['nx']} of {new_h['userland']}"},
+            {"label": "Full RELRO", "old": f"{old_h['full_relro']} of {old_h['userland']}", "new": f"{new_h['full_relro']} of {new_h['userland']}"},
+            {"label": "With stack canary", "old": f"{old_h['canary']} of {old_h['userland']}", "new": f"{new_h['canary']} of {new_h['userland']}"},
+            {"label": "Setuid or setgid files", "old": sum(1 for f in old_a["files"].values() if f.get("setuid")), "new": sum(1 for f in new_a["files"].values() if f.get("setuid"))},
+            {"label": "Secret candidates", "old": len(old_a["secret_candidates"]), "new": len(new_a["secret_candidates"])},
         ],
         "key_packages": key,
         "packages_added": sorted(set(new_p) - set(old_p)),

@@ -3,93 +3,93 @@
   "components": {
    "CVE-2026-62948": {
     "status": "fixed",
-    "reason": "A árvore da tag v24.10.8 aplica a patch 0034-statefiles-escape-client-hostnames ao odhcpd, e o 40_dhcp.js da imagem já escapa o nome de host com '%h'.format."
+    "reason": "The v24.10.8 tree applies patch 0034-statefiles-escape-client-hostnames to odhcpd, and 40_dhcp.js in the image already escapes the hostname with '%h'.format."
    },
    "CVE-2026-62947": {
     "status": "fixed",
-    "reason": "O commit 31cb3c89 do cgi-io incluído na imagem contém a correção 72990b7 (comparação de commits no GitHub)."
+    "reason": "The cgi-io commit 31cb3c89 in the image contains fix 72990b7 (GitHub commit comparison)."
    },
    "CVE-2026-55490": {
     "status": "not_applicable",
-    "reason": "Afeta o Emergency Access Daemon. O pacote ead não está nesta imagem."
+    "reason": "Affects the Emergency Access Daemon. The ead package is not in this image."
    },
    "CVE-2025-26519": {
     "status": "not_applicable",
-    "reason": "O descodificador EUC-KR está compilado fora: a patch 900-iconv_size_hack exige FULL_ICONV, que não é definido, e a string euckr não existe no libc.so da imagem."
+    "reason": "The EUC-KR decoder is compiled out: patch 900-iconv_size_hack requires FULL_ICONV, which is not defined, and the string euckr does not exist in the image's libc.so."
    },
    "CVE-2025-60876": {
     "status": "not_applicable",
-    "reason": "O applet wget do BusyBox não existe na imagem, nem como ligação nem como string no binário."
+    "reason": "The BusyBox wget applet is not in the image, neither as a link nor as a string in the binary."
    },
    "CVE-2025-66442": {
     "status": "not_applicable",
-    "reason": "Só ocorre com a otimização select-optimize do LLVM. O OpenWrt compila com GCC."
+    "reason": "Only occurs with LLVM's select-optimize optimization. OpenWrt builds with GCC."
    },
    "CVE-2025-47203": {
     "status": "not_applicable",
-    "reason": "Exige multihop no dbclient. O DROPBEAR_CLI_NETCAT está desligado e o binário só tem a forma de uso sem multihop."
+    "reason": "Requires multihop in dbclient. DROPBEAR_CLI_NETCAT is off and the binary only has the usage form without multihop."
    },
    "CVE-2025-14282": {
     "status": "fixed",
-    "reason": "As patches 001 a 005 trazem da versão 2025.89 o abandono de privilégios após a autenticação, ativo por omissão. O registo no OSV aponta para outro commit, por isso a confirmação vem do CHANGES do Dropbear."
+    "reason": "Patches 001 to 005 bring in the dropping of privileges after authentication from version 2025.89, active by default. The OSV record points to another commit, so the confirmation comes from Dropbear's CHANGES file."
    },
    "CVE-2022-48174": {
     "status": "likely_present",
-    "reason": "A correção d417193 não está na tag 1_36_1 e a árvore não tem backport. O ash está na imagem. O CVSS 9.8 é genérico: é preciso que o ash avalie uma expansão controlada pelo atacante, e não analisei se existe um caminho remoto."
+    "reason": "Fix d417193 is not in tag 1_36_1 and the tree has no backport. ash is in the image. The CVSS of 9.8 is generic: ash must evaluate an attacker-controlled expansion, and whether a remote path exists was not analyzed."
    },
    "CVE-2023-42363": {
     "status": "likely_present",
-    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+    "reason": "The awk applet is in the image and the tree has no patch. Requires a malicious awk program."
    },
    "CVE-2023-42364": {
     "status": "likely_present",
-    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+    "reason": "The awk applet is in the image and the tree has no patch. Requires a malicious awk program."
    },
    "CVE-2023-42365": {
     "status": "likely_present",
-    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+    "reason": "The awk applet is in the image and the tree has no patch. Requires a malicious awk program."
    },
    "CVE-2023-42366": {
     "status": "likely_present",
-    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+    "reason": "The awk applet is in the image and the tree has no patch. Requires a malicious awk program."
    },
    "CVE-2025-46394": {
     "status": "likely_present",
-    "reason": "O applet tar está na imagem e a árvore não tem patch. Permite esconder nomes de ficheiros numa listagem."
+    "reason": "The tar applet is in the image and the tree has no patch. Allows hiding file names in a listing."
    }
   },
   "kernel": {
    "CVE-2026-43198": {
     "status": "no_security_impact",
-    "reason": "A correção falta (chega no 6.6.157), mas a corrida precisa de outro CPU a usar o socket filho. O kernel é compilado sem SMP e sem preempção, e este caminho corre em softirq, sem backlog para sockets em escuta."
+    "reason": "The fix is missing (arrives in 6.6.157), but the race needs another CPU using the child socket. The kernel is built without SMP or preemption, and this path runs in softirq, with no backlog for listening sockets."
    },
    "CVE-2026-64355": {
     "status": "unused",
-    "reason": "A correção falta (chega no 6.6.145), mas a falha exige um programa XDP com devmap, e criar o devmap exige CAP_NET_ADMIN. A imagem não carrega XDP e nenhum driver compilado tem XDP nativo."
+    "reason": "The fix is missing (arrives in 6.6.145), but the flaw requires an XDP program with a devmap, and creating the devmap requires CAP_NET_ADMIN. The image loads no XDP and no compiled driver has native XDP."
    },
    "CVE-2026-43083": {
     "status": "unused",
-    "reason": "A correção falta (chega no 6.6.160), mas o caminho exige ioam6_enabled=1 e um namespace IOAM criado com permissão de administrador. O valor por omissão é 0, o OpenWrt não o altera e IPV6_IOAM6_LWTUNNEL está desligado."
+    "reason": "The fix is missing (arrives in 6.6.160), but the path requires ioam6_enabled=1 and an IOAM namespace created with administrator permission. The default is 0, OpenWrt does not change it, and IPV6_IOAM6_LWTUNNEL is off."
    },
    "CVE-2025-71202": {
     "status": "not_applicable",
-    "reason": "Só afeta sistemas com IOMMU SVA. CONFIG_IOMMU_SUPPORT e CONFIG_IOMMU_SVA estão desligados, iommu-sva.c não é compilado e a função alterada em mm/pgtable-generic.c não existe neste kernel."
+    "reason": "Only affects systems with IOMMU SVA. CONFIG_IOMMU_SUPPORT and CONFIG_IOMMU_SVA are off, iommu-sva.c is not compiled, and the function changed in mm/pgtable-generic.c does not exist in this kernel."
    },
    "CVE-2026-64117": {
     "status": "not_applicable",
-    "reason": "A leitura vulnerável não existe nos backports 6.12.96: nas séries estáveis, só entrou no mesmo lançamento que a corrige (6.6.160, 6.12.114, 6.18.57), apesar de a CNA indicar a falha desde o 6.4. A DWARF do mac80211.ko confirma o tamanho da função, sem essas linhas."
+    "reason": "The vulnerable read does not exist in backports 6.12.96: in the stable series it only arrived in the same release that fixes it (6.6.160, 6.12.114, 6.18.57), although the CNA lists the flaw since 6.4. The DWARF of mac80211.ko confirms the function's size, without those lines."
    },
    "CVE-2026-53091": {
     "status": "no_security_impact",
-    "reason": "A correção falta (chega no 6.6.160), mas o risco está em drivers com TSO que leem os cabeçalhos diretamente. Nenhum código compilado ou módulo da imagem chama as funções tso_*, o ag71xx não anuncia TSO e os pacotes GSO malformados exigiriam tun, virtio ou AF_PACKET como root."
+    "reason": "The fix is missing (arrives in 6.6.160), but the risk lies in TSO drivers that read headers directly. No compiled code or image module calls the tso_* functions, ag71xx does not advertise TSO, and malformed GSO packets would require tun, virtio or AF_PACKET as root."
    },
    "CVE-2025-71072": {
     "status": "likely_present",
-    "reason": "A correção falta (chega no 6.6.160) e o tmpfs está em uso. Exige um processo local e uma falha de memória do kernel durante um rename. Não encontrei caminho remoto, e todas as contas exceto root estão bloqueadas."
+    "reason": "The fix is missing (arrives in 6.6.160) and tmpfs is in use. Requires a local process and a kernel memory failure during a rename. No remote path was found, and all accounts except root are locked."
    },
    "CVE-2026-64368": {
     "status": "not_applicable",
-    "reason": "Só ocorre com red zoning do SLUB. CONFIG_SLUB_DEBUG está desligado, por isso __slub_debug_enabled() devolve sempre falso e a condição nunca se verifica."
+    "reason": "Only occurs with SLUB red zoning. CONFIG_SLUB_DEBUG is off, so __slub_debug_enabled() always returns false and the condition is never met."
    }
   }
  },
@@ -97,61 +97,61 @@
   "components": {
    "CVE-2025-26519": {
     "status": "not_applicable",
-    "reason": "O descodificador EUC-KR está compilado fora: a patch 900-iconv_size_hack exige FULL_ICONV, que não é definido, e a string euckr não existe no libc.so da imagem."
+    "reason": "The EUC-KR decoder is compiled out: patch 900-iconv_size_hack requires FULL_ICONV, which is not defined, and the string euckr does not exist in the image's libc.so."
    },
    "CVE-2025-60876": {
     "status": "not_applicable",
-    "reason": "O applet wget do BusyBox não existe na imagem, nem como ligação nem como string no binário."
+    "reason": "The BusyBox wget applet is not in the image, neither as a link nor as a string in the binary."
    },
    "CVE-2025-66442": {
     "status": "not_applicable",
-    "reason": "Só ocorre com a otimização select-optimize do LLVM. O OpenWrt compila com GCC."
+    "reason": "Only occurs with LLVM's select-optimize optimization. OpenWrt builds with GCC."
    },
    "CVE-2026-22184": {
     "status": "not_applicable",
-    "reason": "Afeta o utilitário untgz, que não está na imagem."
+    "reason": "Affects the untgz utility, which is not in the image."
    },
    "CVE-2026-3381": {
     "status": "not_applicable",
-    "reason": "Correspondência errada: afeta o módulo Perl Compress::Raw::Zlib, que não está na imagem."
+    "reason": "Wrong match: affects the Perl module Compress::Raw::Zlib, which is not in the image."
    },
    "CVE-2026-27171": {
     "status": "unused",
-    "reason": "O código existe na libz, mas o único binário que a usa, o apk, não importa crc32_combine."
+    "reason": "The code exists in libz, but the only binary that uses it, apk, does not import crc32_combine."
    },
    "CVE-2026-76844": {
     "status": "unused",
-    "reason": "O código existe na libz, mas o único binário que a usa, o apk, não importa funções gz*."
+    "reason": "The code exists in libz, but the only binary that uses it, apk, does not import gz* functions."
    },
    "CVE-2026-3706": {
     "status": "no_security_impact",
-    "reason": "A correção fdec3c9 não está na versão 2025.89, mas o autor do Dropbear escreve no commit que não há impacto de segurança na forma como o SSH usa este código."
+    "reason": "Fix fdec3c9 is not in version 2025.89, but the Dropbear author writes in the commit that there is no security impact in the way SSH uses this code."
    },
    "CVE-2025-46394": {
     "status": "likely_present",
-    "reason": "O applet tar está na imagem e a árvore não tem patch. Permite esconder nomes de ficheiros numa listagem."
+    "reason": "The tar applet is in the image and the tree has no patch. Allows hiding file names in a listing."
    }
   },
   "kernel": {
    "CVE-2026-64024": {
     "status": "likely_present",
-    "reason": "A correção só chega no 6.12.114 e tcp_tw_isn só é limpo em tcp_conn_request. Sem SMP, a variável por CPU é única, por isso o ISN previsível fica para o SYN seguinte de qualquer cliente. Afeta só TCP terminado no router. O firewall rejeita INPUT na WAN, por isso o alcance por omissão é a LAN. Não testado num dispositivo."
+    "reason": "The fix only arrives in 6.12.114 and tcp_tw_isn is only cleared in tcp_conn_request. Without SMP, the per-CPU variable is a single one, so the predictable ISN is left for the next SYN from any client. Only affects TCP terminated on the router. The firewall rejects INPUT on WAN, so the default reach is the LAN. Not tested on a device."
    },
    "CVE-2026-43083": {
     "status": "unused",
-    "reason": "A correção falta (chega no 6.12.114), mas o caminho exige ioam6_enabled=1 e um namespace IOAM criado com permissão de administrador. O valor por omissão é 0, o OpenWrt não o altera e IPV6_IOAM6_LWTUNNEL está desligado."
+    "reason": "The fix is missing (arrives in 6.12.114), but the path requires ioam6_enabled=1 and an IOAM namespace created with administrator permission. The default is 0, OpenWrt does not change it, and IPV6_IOAM6_LWTUNNEL is off."
    },
    "CVE-2025-71202": {
     "status": "not_applicable",
-    "reason": "Só afeta sistemas com IOMMU SVA. CONFIG_IOMMU_SUPPORT e CONFIG_IOMMU_SVA estão desligados, iommu-sva.c não é compilado e a função alterada em mm/pgtable-generic.c não existe neste kernel."
+    "reason": "Only affects systems with IOMMU SVA. CONFIG_IOMMU_SUPPORT and CONFIG_IOMMU_SVA are off, iommu-sva.c is not compiled, and the function changed in mm/pgtable-generic.c does not exist in this kernel."
    },
    "CVE-2026-64117": {
     "status": "not_applicable",
-    "reason": "A leitura vulnerável não existe nos backports 6.18.55: nas séries estáveis, só entrou no mesmo lançamento que a corrige (6.6.160, 6.12.114, 6.18.57), apesar de a CNA indicar a falha desde o 6.4. A DWARF do mac80211.ko confirma o tamanho da função, sem essas linhas."
+    "reason": "The vulnerable read does not exist in backports 6.18.55: in the stable series it only arrived in the same release that fixes it (6.6.160, 6.12.114, 6.18.57), although the CNA lists the flaw since 6.4. The DWARF of mac80211.ko confirms the function's size, without those lines."
    },
    "CVE-2026-53091": {
     "status": "no_security_impact",
-    "reason": "A correção falta (chega no 6.12.114), mas o risco está em drivers com TSO que leem os cabeçalhos diretamente. Nenhum código compilado ou módulo da imagem chama as funções tso_*, o ag71xx não anuncia TSO e os pacotes GSO malformados exigiriam tun, virtio ou AF_PACKET como root."
+    "reason": "The fix is missing (arrives in 6.12.114), but the risk lies in TSO drivers that read headers directly. No compiled code or image module calls the tso_* functions, ag71xx does not advertise TSO, and malformed GSO packets would require tun, virtio or AF_PACKET as root."
    }
   }
  }

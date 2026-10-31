@@ -1,4 +1,4 @@
-<title>Observatório de firmware</title>
+<title>Firmware Observatory</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <!--FONTS-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -135,7 +135,7 @@ footer { border-top: 1px solid var(--rule); padding-block: 18px 28px; color: var
 </style>
 <!--HEAD-END-->
 <header class="masthead"><div class="wrap">
-  <a class="wordmark" href="#inicio">Observatório de firmware</a>
+  <a class="wordmark" href="#home">Firmware Observatory</a>
   <nav class="nav" id="nav" aria-label="Routers"></nav>
 </div></header>
 <main class="wrap" id="app"></main>
@@ -144,11 +144,11 @@ footer { border-top: 1px solid var(--rule); padding-block: 18px 28px; color: var
 <script>
 const DATA = /*DATA*/null;
 const app = document.getElementById("app");
-const number = new Intl.NumberFormat("pt-PT");
-const decimal = new Intl.NumberFormat("pt-PT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const PILLS = { "Provavelmente presente": "likely", "Por confirmar": "confirm", "Por rever": "review", "Corrigido": "fixed" };
-const CHANGES = { left: "Saiu", entered: "Entrou", stayed: "Ficou" };
-const SEGMENTS = [["outside", "Fora deste router ou retirado à mão"], ["fixed", "Corrigido"], ["review", "Por rever"], ["open", "Em aberto"]];
+const number = new Intl.NumberFormat("en-GB");
+const decimal = new Intl.NumberFormat("en-GB", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const PILLS = { "Likely present": "likely", "To confirm": "confirm", "To review": "review", "Fixed": "fixed" };
+const CHANGES = { left: "Gone", entered: "New", stayed: "Still open" };
+const SEGMENTS = [["outside", "Outside this router, or removed by hand"], ["fixed", "Fixed"], ["review", "To review"], ["open", "Open"]];
 
 const esc = (value) => String(value ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const pill = (label) => `<span class="pill ${PILLS[label] || ""}">${esc(label)}</span>`;
@@ -174,7 +174,7 @@ function home() {
       <div class="ref">${esc(d.target)}</div>
       <h3>${esc(d.name)}</h3>
       <div class="big">${number.format(before.open)} <span>→</span> ${number.format(after.open)}</div>
-      <p class="note">CVEs do kernel em aberto, de OpenWrt ${esc(d.old)} para ${esc(d.new)}. Saem ${number.format(d.counts.left)} e entram ${number.format(d.counts.entered)}.</p>
+      <p class="note">Open kernel CVEs, from OpenWrt ${esc(d.old)} to ${esc(d.new)}. ${number.format(d.counts.left)} go away and ${number.format(d.counts.entered)} are new.</p>
     </a>`;
   }).join("");
   const rows = DATA.differences.map((row) => `<tr>
@@ -183,40 +183,40 @@ function home() {
     </tr>`).join("");
   const names = DATA.differences[0]?.verdicts.map((v) => `<th>${esc(deviceName(v.device))}</th>`).join("") || "";
   return `<section class="intro">
-      <h1>O que muda no seu router quando atualiza o firmware?</h1>
-      <p class="lead">Comparamos as imagens oficiais do OpenWrt, versão a versão e modelo a modelo. Cada CVE é confrontado com o que foi mesmo compilado para aquele router, e os mais graves são revistos à mão.</p>
+      <h1>What changes on your router when you update the firmware?</h1>
+      <p class="lead">We compare official OpenWrt images, version by version and model by model. Each CVE is checked against what was actually compiled for that router, and the most severe ones are reviewed by hand.</p>
     </section>
-    <section aria-label="Routers analisados"><div class="chips">${cards}</div></section>
+    <section aria-label="Routers analyzed"><div class="chips">${cards}</div></section>
     <section>
-      <h2>Mesmo software, respostas diferentes</h2>
-      <p>Estes routers correm as mesmas versões do kernel, mas o hardware muda a resposta. Um número de CPUs ou um driver de rede pode tornar uma falha possível ou impossível.</p>
-      <div class="table-box"><table><caption>Vereditos que dependem do router</caption>
+      <h2>Same software, different answers</h2>
+      <p>These routers run the same kernel versions, but the hardware changes the answer. The number of CPUs or a network driver can make a flaw possible or impossible.</p>
+      <div class="table-box"><table><caption>Verdicts that depend on the router</caption>
         <thead><tr><th>CVE</th>${names}</tr></thead><tbody>${rows}</tbody></table></div>
     </section>
     <section>
-      <h2>Como ler os estados</h2>
+      <h2>How to read the statuses</h2>
       <dl class="glossary">
-        <div><dt>${pill("Provavelmente presente")}</dt><dd>Revisto à mão. A correção falta e o código pode ser alcançado. Não foi testado num dispositivo.</dd></div>
-        <div><dt>${pill("Por confirmar")}</dt><dd>O código está compilado e a correção não foi demonstrada. Ninguém o reviu à mão.</dd></div>
-        <div><dt>${pill("Código sem uso")}</dt><dd>O código existe, mas a configuração da imagem não chega a ele. Volta a contar se a funcionalidade for ativada.</dd></div>
-        <div><dt>${pill("Presente, sem impacto")}</dt><dd>O código está lá, mas neste router a falha não tem efeito.</dd></div>
-        <div><dt>${pill("Não aplicável")}</dt><dd>A falha exige algo que este router não tem.</dd></div>
-        <div><dt>${pill("Por rever")}</dt><dd>Faltam dados para decidir. Não entra nas contagens de em aberto.</dd></div>
+        <div><dt>${pill("Likely present")}</dt><dd>Reviewed by hand. The fix is missing and the code can be reached. Not tested on a device.</dd></div>
+        <div><dt>${pill("To confirm")}</dt><dd>The code is compiled and the fix was not demonstrated. Nobody reviewed it by hand.</dd></div>
+        <div><dt>${pill("Unused code")}</dt><dd>The code exists, but the image configuration does not reach it. It counts again if the feature is enabled.</dd></div>
+        <div><dt>${pill("Present, no impact")}</dt><dd>The code is there, but the flaw has no effect on this router.</dd></div>
+        <div><dt>${pill("Not applicable")}</dt><dd>The flaw requires something this router does not have.</dd></div>
+        <div><dt>${pill("To review")}</dt><dd>There is not enough data to decide. It is not counted as open.</dd></div>
       </dl>
     </section>`;
 }
 
 function cveTable(device) {
   const filter = { change: "all", severe: false, query: "" };
-  const controls = [["all", `Todos (${number.format(device.cves.length)})`], ["left", `Saíram (${number.format(device.counts.left)})`], ["entered", `Entraram (${number.format(device.counts.entered)})`], ["stayed", `Ficaram (${number.format(device.counts.stayed)})`]];
+  const controls = [["all", `All (${number.format(device.cves.length)})`], ["left", `Gone (${number.format(device.counts.left)})`], ["entered", `New (${number.format(device.counts.entered)})`], ["stayed", `Still open (${number.format(device.counts.stayed)})`]];
   const markup = `<div class="controls">
       ${controls.map(([value, label]) => `<button type="button" data-change="${value}" aria-pressed="${value === "all"}">${label}</button>`).join("")}
-      <label><input type="checkbox" id="severe"> Só CVSS 7 ou mais</label>
-      <input type="search" id="query" placeholder="Procurar CVE ou tema" aria-label="Procurar CVE ou tema">
+      <label><input type="checkbox" id="severe"> CVSS 7 or higher only</label>
+      <input type="search" id="query" placeholder="Search CVE or topic" aria-label="Search CVE or topic">
     </div>
     <p class="note" id="shown" aria-live="polite"></p>
-    <div class="table-box tall"><table><caption>CVEs do kernel em aberto em pelo menos uma versão</caption>
-      <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Mudança</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th><th>Tema</th></tr></thead>
+    <div class="table-box tall"><table><caption>Kernel CVEs open in at least one version</caption>
+      <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Change</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th><th>Topic</th></tr></thead>
       <tbody id="cve-rows"></tbody></table></div>`;
   const render = () => {
     const query = filter.query.toLowerCase();
@@ -227,7 +227,7 @@ function cveTable(device) {
       <td class="id">${cveLink(r.cve)}</td><td class="num">${score(r.score)}</td>
       <td><span class="pill ${r.change}">${CHANGES[r.change]}</span></td>
       <td>${pill(r.old)}</td><td>${pill(r.new)}</td><td class="wide">${esc(r.title)}</td></tr>`).join("");
-    document.getElementById("shown").textContent = rows.length ? `${number.format(rows.length)} CVEs nesta vista.` : "Nenhum CVE corresponde a estes filtros. Limpe a procura ou escolha Todos.";
+    document.getElementById("shown").textContent = rows.length ? `${number.format(rows.length)} CVEs in this view.` : "No CVE matches these filters. Clear the search or choose All.";
   };
   const bind = () => {
     document.querySelectorAll("[data-change]").forEach((button) => button.addEventListener("click", () => {
@@ -251,107 +251,107 @@ function sheet(device) {
     label: s.release, total: s.total,
     values: { outside: s.outside + s.reviewed_out, fixed: s.fixed, review: s.review, open: s.open },
   })), SEGMENTS, maximum, (v) => number.format(v));
-  const splitRows = [["Candidatos iniciais", "total"], ["Corrigido, ou nunca presente", "fixed"], ["Fora deste router", "outside"], ["Por rever", "review"], ["Retirados na revisão manual", "reviewed_out"], ["Em aberto", "open"]]
+  const splitRows = [["Initial candidates", "total"], ["Fixed, or never present", "fixed"], ["Outside this router", "outside"], ["To review", "review"], ["Removed by manual review", "reviewed_out"], ["Open", "open"]]
     .map(([label, key]) => `<tr><td>${label}</td><td class="num">${number.format(before[key])}</td><td class="num">${number.format(after[key])}</td></tr>`).join("");
   const mapRows = image.map.map((m) => ({ label: m.release, total: m.bytes, values: { outside: m.kernel, fixed: m.rootfs } }));
-  const mapBars = stackedBars(mapRows, [["outside", "Kernel"], ["fixed", "Sistema de ficheiros"]], Math.max(...image.map.map((m) => m.bytes)), megabytes);
+  const mapBars = stackedBars(mapRows, [["outside", "Kernel"], ["fixed", "File system"]], Math.max(...image.map.map((m) => m.bytes)), megabytes);
   const table = cveTable(device);
-  const direction = after.open < before.open ? "A versão nova tem menos candidatos em aberto." : after.open > before.open ? "A versão nova tem mais candidatos em aberto." : "As duas versões têm o mesmo número de candidatos em aberto.";
+  const direction = after.open < before.open ? "The new version has fewer open candidates." : after.open > before.open ? "The new version has more open candidates." : "Both versions have the same number of open candidates.";
   const facts = image.facts.map((f) => `<tr><td>${esc(f.label)}</td><td class="mono">${esc(f.old)}</td><td class="mono">${esc(f.new)}</td></tr>`).join("");
   const packages = image.key_packages.map((p) => `<tr><td class="mono">${esc(p.name)}</td><td class="mono">${esc(p.old)}</td><td class="mono">${esc(p.new)}</td></tr>`).join("");
   const reviewed = device.reviewed.map((r) => `<tr><td class="id">${cveLink(r.cve)}</td><td class="num">${score(r.score)}</td>
     <td class="wide">${r.verdicts.map((v) => `<div>${pill(v.status)} <span class="ref">${esc(v.release)}</span></div><div class="note">${esc(v.reason)}</div>`).join("")}</td></tr>`).join("");
   const components = device.components.map((r) => {
-    const cell = (release) => (r.states[release] ? pill(r.states[release].label) : '<span class="ref">Não listado</span>');
+    const cell = (release) => (r.states[release] ? pill(r.states[release].label) : '<span class="ref">Not listed</span>');
     const reason = (r.states[device.new] || r.states[device.old]).reason;
     return `<tr><td class="id">${cveLink(r.cve)}</td><td class="mono">${esc(r.component)}</td><td class="num">${score(r.score)}</td><td>${cell(device.old)}</td><td>${cell(device.new)}</td><td class="wide note">${esc(reason)}</td></tr>`;
   }).join("");
-  const list = (items) => (items.length ? `<ul class="tags">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>` : '<p class="note">Nenhum.</p>');
-  const configs = image.configs.map((c) => (c.diff ? `<details><summary>${esc(c.path)}</summary><pre>${esc(c.diff)}</pre></details>` : `<p class="note"><code>${esc(c.path)}</code>: sem alterações.</p>`)).join("");
+  const list = (items) => (items.length ? `<ul class="tags">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>` : '<p class="note">None.</p>');
+  const configs = image.configs.map((c) => (c.diff ? `<details><summary>${esc(c.path)}</summary><pre>${esc(c.diff)}</pre></details>` : `<p class="note"><code>${esc(c.path)}</code>: no changes.</p>`)).join("");
   const provenance = check.provenance.map((p) => `<tr><td class="mono">${esc(p.release)}</td><td class="mono">${esc(p.image)}</td><td class="mono">${esc(p.sha256)}</td></tr>`).join("");
   const shifted = check.shift.some(Boolean)
-    ? ` O texto de versão do kernel aparece ${check.shift[0]} e ${check.shift[1]} bytes antes do previsto. Este desvio não está explicado, por isso esta prova é mais fraca do que um endereço exato.` : "";
+    ? ` The kernel version text appears ${check.shift[0]} and ${check.shift[1]} bytes before the expected address. This offset is not explained, so this evidence is weaker than an exact address.` : "";
   const checks = [
-    `Kernel: ${check.kernel_confirmed ? "os dados do kernel da imagem estão no endereço dado pelos símbolos oficiais de depuração." : "não confirmado nos símbolos oficiais de depuração."}${shifted}`,
-    `Vereditos "corrigido" em código compilado: ${number.format(check.fixed_total)} no total, ${number.format(check.fixed_by_tool)} confirmados no código real pela ferramenta e ${number.format(check.fixed_by_hand.length)} à mão. Por confirmar: ${number.format(check.fixed_unresolved.length)}.`,
-    `Código "não compilado": ${number.format(check.rules_disabled)} de ${number.format(check.rules_checked)} regras diretas das Makefiles têm a opção desligada no <code>.config</code> real.${check.rule_exceptions.length ? ` Exceções: ${check.rule_exceptions.map((p) => `<code>${esc(p)}</code>`).join(", ")}.` : ""}`,
-    `Filtro de funções: ${number.format(check.functions_proved)} de ${number.format(check.functions_retired)} retirados têm prova independente do método que os retirou.`,
-    `Controlos: ${check.controls_ok ? "todos ficaram na categoria esperada." : "pelo menos um falhou."}`,
+    `Kernel: ${check.kernel_confirmed ? "the image kernel data is at the address given by the official debug symbols." : "not confirmed against the official debug symbols."}${shifted}`,
+    `"Fixed" verdicts on compiled code: ${number.format(check.fixed_total)} in total, ${number.format(check.fixed_by_tool)} confirmed in the real code by the tool and ${number.format(check.fixed_by_hand.length)} by hand. To confirm: ${number.format(check.fixed_unresolved.length)}.`,
+    `"Not compiled" code: ${number.format(check.rules_disabled)} of ${number.format(check.rules_checked)} direct Makefile rules have the option off in the real <code>.config</code>.${check.rule_exceptions.length ? ` Exceptions: ${check.rule_exceptions.map((p) => `<code>${esc(p)}</code>`).join(", ")}.` : ""}`,
+    `Function filter: ${number.format(check.functions_proved)} of ${number.format(check.functions_retired)} removals have evidence independent of the method that removed them.`,
+    `Controls: ${check.controls_ok ? "all landed in the expected category." : "at least one failed."}`,
   ].map((text) => `<li>${text}</li>`).join("");
   app.innerHTML = `<section class="sheet-head">
       <div class="ref">${esc(device.id)}</div>
       <h1>${esc(device.name)}</h1>
       <dl class="spec">
-        <div><dt>Versões</dt><dd>${esc(device.old)} → ${esc(device.new)}</dd></div>
-        <div><dt>Alvo OpenWrt</dt><dd>${esc(device.target)}</dd></div>
+        <div><dt>Versions</dt><dd>${esc(device.old)} → ${esc(device.new)}</dd></div>
+        <div><dt>OpenWrt target</dt><dd>${esc(device.target)}</dd></div>
         <div><dt>Kernel</dt><dd>${esc(device.kernels[0])} → ${esc(device.kernels[1])}</dd></div>
-        <div><dt>CVEs consultados</dt><dd>${esc(check.consulted)}</dd></div>
+        <div><dt>CVEs consulted</dt><dd>${esc(check.consulted)}</dd></div>
       </dl>
     </section>
     <section>
       <div class="answer">
         <div class="big">${number.format(before.open)} <span>→</span> ${number.format(after.open)}</div>
         <div class="intro">
-          <p class="lead">${direction} Isto é um sinal, não uma medida de risco: a contagem também depende do que foi registado para cada série do kernel.</p>
-          <div class="tally"><span><b>${number.format(device.counts.left)}</b>saíram</span><span><b>${number.format(device.counts.entered)}</b>entraram</span><span><b>${number.format(device.counts.stayed)}</b>ficaram</span></div>
+          <p class="lead">${direction} This is a signal, not a measure of risk: the count also depends on what was recorded for each kernel series.</p>
+          <div class="tally"><span><b>${number.format(device.counts.left)}</b>gone</span><span><b>${number.format(device.counts.entered)}</b>new</span><span><b>${number.format(device.counts.stayed)}</b>still open</span></div>
         </div>
       </div>
-      <p class="note">Em aberto significa que o código está compilado e a correção não foi demonstrada. Não prova que a falha seja explorável neste router.</p>
+      <p class="note">Open means the code is compiled and the fix was not demonstrated. It does not prove that the flaw is exploitable on this router.</p>
     </section>
     <section>
-      <h2>Para onde foram os candidatos</h2>
+      <h2>Where the candidates went</h2>
       ${bars}
-      <div class="table-box"><table><caption>Candidatos do kernel por etapa</caption>
-        <thead><tr><th>Etapa</th><th class="num">${esc(device.old)}</th><th class="num">${esc(device.new)}</th></tr></thead><tbody>${splitRows}</tbody></table></div>
+      <div class="table-box"><table><caption>Kernel candidates by stage</caption>
+        <thead><tr><th>Stage</th><th class="num">${esc(device.old)}</th><th class="num">${esc(device.new)}</th></tr></thead><tbody>${splitRows}</tbody></table></div>
     </section>
     <section>
-      <h2>Revisão manual</h2>
-      <p>Cada CVE com CVSS igual ou superior a 8,0 foi lido no código deste router. O CVSS é uma nota genérica, e este veredito é o que conta aqui.</p>
-      <div class="table-box"><table><caption>Vereditos manuais</caption>
-        <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Veredito e motivo</th></tr></thead><tbody>${reviewed}</tbody></table></div>
+      <h2>Manual review</h2>
+      <p>Every CVE with a CVSS of 8.0 or higher was read in the code of this router. CVSS is a generic score, and this verdict is what counts here.</p>
+      <div class="table-box"><table><caption>Manual verdicts</caption>
+        <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Verdict and reason</th></tr></thead><tbody>${reviewed}</tbody></table></div>
     </section>
     <section>
-      <h2>Todos os CVEs do kernel em aberto</h2>
+      <h2>All open kernel CVEs</h2>
       ${table.markup}
     </section>
     <section>
-      <h2>Programas fora do kernel</h2>
-      <div class="table-box"><table><caption>CVEs de programas</caption>
-        <thead><tr><th>CVE</th><th>Programa</th><th class="num">CVSS</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th><th>Motivo</th></tr></thead><tbody>${components}</tbody></table></div>
+      <h2>Programs outside the kernel</h2>
+      <div class="table-box"><table><caption>Program CVEs</caption>
+        <thead><tr><th>CVE</th><th>Program</th><th class="num">CVSS</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th><th>Reason</th></tr></thead><tbody>${components}</tbody></table></div>
     </section>
     <section>
-      <h2>O que mudou na imagem</h2>
-      <h3>Mapa da imagem</h3>
+      <h2>What changed in the image</h2>
+      <h3>Image map</h3>
       ${mapBars}
-      <p class="note">${image.map.map((m) => `${esc(m.release)}: sistema de ficheiros a partir de <code>${hex(m.kernel)}</code>, ${megabytes(m.bytes)} no total.`).join(" ")}</p>
+      <p class="note">${image.map.map((m) => `${esc(m.release)}: file system from <code>${hex(m.kernel)}</code>, ${megabytes(m.bytes)} in total.`).join(" ")}</p>
       <div class="columns">
-        <div class="table-box"><table><caption>Medidas da imagem</caption><thead><tr><th>Medida</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${facts}</tbody></table></div>
-        <div class="table-box"><table><caption>Pacotes principais</caption><thead><tr><th>Pacote</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${packages}</tbody></table></div>
+        <div class="table-box"><table><caption>Image measures</caption><thead><tr><th>Measure</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${facts}</tbody></table></div>
+        <div class="table-box"><table><caption>Main packages</caption><thead><tr><th>Package</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${packages}</tbody></table></div>
       </div>
-      <p>${number.format(image.packages_added.length)} pacotes adicionados, ${number.format(image.packages_removed.length)} removidos e ${number.format(image.packages_changed)} com versão alterada.</p>
+      <p>${number.format(image.packages_added.length)} packages added, ${number.format(image.packages_removed.length)} removed and ${number.format(image.packages_changed)} with a changed version.</p>
       <div class="columns">
-        <div><h3>Pacotes adicionados</h3>${list(image.packages_added)}</div>
-        <div><h3>Pacotes removidos</h3>${list(image.packages_removed)}</div>
-        <div><h3>Programas adicionados</h3>${list(image.programs_added)}</div>
-        <div><h3>Programas removidos</h3>${list(image.programs_removed)}</div>
+        <div><h3>Packages added</h3>${list(image.packages_added)}</div>
+        <div><h3>Packages removed</h3>${list(image.packages_removed)}</div>
+        <div><h3>Programs added</h3>${list(image.programs_added)}</div>
+        <div><h3>Programs removed</h3>${list(image.programs_removed)}</div>
       </div>
-      <h3>Configurações por omissão</h3>
+      <h3>Default settings</h3>
       ${configs}
     </section>
     <section>
-      <h2>Como isto foi verificado</h2>
+      <h2>How this was verified</h2>
       <ul class="plain">${checks}</ul>
-      <h3>Limites</h3>
+      <h3>Limits</h3>
       <ul class="plain">
-        <li>Tudo isto é análise estática. Nada foi testado num dispositivo.</li>
-        <li>A análise cobre a configuração incluída na imagem, não um router já configurado.</li>
-        <li>Instalar pacotes ou ativar funcionalidades pode tornar relevante um CVE marcado como fora deste router.</li>
-        <li>Os CVEs abaixo de CVSS 8,0 seguem a classificação automática.</li>
-        <li>O kernel foi lido sem as patches do OpenWrt, exceto nas revisões manuais que as mencionam.</li>
-        <li>O hostapd e o wpad não foram correlacionados, porque usam snapshots por data.</li>
+        <li>All of this is static analysis. Nothing was tested on a device.</li>
+        <li>The analysis covers the configuration shipped in the image, not an already configured router.</li>
+        <li>Installing packages or enabling features can make a CVE marked as outside this router relevant.</li>
+        <li>CVEs below CVSS 8.0 follow the automatic classification.</li>
+        <li>The kernel was read without the OpenWrt patches, except in manual reviews that mention them.</li>
+        <li>hostapd and wpad were not correlated, because they use dated snapshots.</li>
       </ul>
-      <h3>Imagens analisadas</h3>
-      <div class="table-box"><table><caption>Proveniência</caption><thead><tr><th>Versão</th><th>Imagem oficial</th><th>SHA-256</th></tr></thead><tbody>${provenance}</tbody></table></div>
+      <h3>Images analyzed</h3>
+      <div class="table-box"><table><caption>Provenance</caption><thead><tr><th>Version</th><th>Official image</th><th>SHA-256</th></tr></thead><tbody>${provenance}</tbody></table></div>
     </section>`;
   table.bind();
 }
@@ -375,7 +375,7 @@ document.addEventListener("pointermove", (event) => {
   }
 });
 
-document.getElementById("foot").textContent = `Projeto independente, sem ligação ao OpenWrt, à TP-Link nem à Xiaomi. Publicamos metadados, hashes e resultados, nunca as imagens de firmware. CVEs consultados a ${DATA.consulted}. Este produto usa dados da API do NVD, mas não é aprovado nem certificado pelo NVD.`;
+document.getElementById("foot").textContent = `Independent project, not affiliated with OpenWrt, TP-Link or Xiaomi. We publish metadata, hashes and results, never the firmware images. CVEs consulted on ${DATA.consulted}. This product uses data from the NVD API but is not endorsed or certified by the NVD.`;
 addEventListener("hashchange", route);
 route();
 </script>

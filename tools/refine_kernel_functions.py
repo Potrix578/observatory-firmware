@@ -225,7 +225,7 @@ def judge(patch, compiled, functions, sources):
                     else:
                         result["absent"].add(f"{path}:{name}")
                 elif kind == "data" or removed or added_inside_macro(added):
-                    result["unresolved"].add(f"{path}:<dados>")
+                    result["unresolved"].add(f"{path}:<data>")
                 # A new top-level item changes nothing by itself: an edit elsewhere must use it.
     return result
 
@@ -263,7 +263,7 @@ if __name__ == "__main__":
     for finding in candidates:
         verdicts = [(judge(patch, compiled, functions, sources), commit) for commit, patch in patches[finding["cve"]].items()]
         if not verdicts:
-            finding["edits"] = {"unresolved": ["sem patch"]}
+            finding["edits"] = {"unresolved": ["no patch"]}
             continue
         # A commit that skips the compiled files proves nothing while another one touches them.
         best, commit = max(verdicts, key=lambda item: (item[0]["hunks"] > 0, item[0]["located"] / max(item[0]["hunks"], 1), item[0]["located"]))

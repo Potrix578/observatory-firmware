@@ -1,9 +1,9 @@
 {
  "6.12.112": {
-  "CVE-2026-31663": "A ferramenta não confirma por a correção mover linhas. No código, dev_put(skb->dev) já não existe e dev_put(dev) está presente.",
-  "CVE-2025-39905": "O commit 5fd0f1a02e, que introduz a falha, só chegou no 6.14. O código de negociação in-band que ele acrescenta, como phy_ib_mode, não existe nesta árvore."
+  "CVE-2026-31663": "The tool cannot confirm it because the fix moves lines. In the code, dev_put(skb->dev) no longer exists and dev_put(dev) is present.",
+  "CVE-2025-39905": "Commit 5fd0f1a02e, which introduces the flaw, only arrived in 6.14. The in-band negotiation code it adds, such as phy_ib_mode, does not exist in this tree."
  },
  "6.6.144": {
-  "CVE-2025-39905": "O commit 5fd0f1a02e, que introduz a falha, só chegou no 6.14. O código de negociação in-band que ele acrescenta, como phy_ib_mode, não existe nesta árvore."
+  "CVE-2025-39905": "Commit 5fd0f1a02e, which introduces the flaw, only arrived in 6.14. The in-band negotiation code it adds, such as phy_ib_mode, does not exist in this tree."
  }
 }

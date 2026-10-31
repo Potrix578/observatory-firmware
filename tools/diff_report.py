@@ -8,14 +8,14 @@ import re
 import sys
 from pathlib import Path
 
-ROOT_LABELS = {"empty": "vazia", "locked": "bloqueada", "hash": "definida", None: "desconhecida"}
+ROOT_LABELS = {"empty": "empty", "locked": "locked", "hash": "set", None: "unknown"}
 STATUS_LABELS = {
-    "likely_present": "Provavelmente presente",
-    "possibly_affected": "Por confirmar",
-    "no_security_impact": "Presente, sem impacto",
-    "unused": "Código sem uso",
-    "not_applicable": "Não aplicável",
-    "fixed": "Corrigido",
+    "likely_present": "Likely present",
+    "possibly_affected": "To confirm",
+    "no_security_impact": "Present, no impact",
+    "unused": "Unused code",
+    "not_applicable": "Not applicable",
+    "fixed": "Fixed",
 }
 STATUS_ORDER = list(STATUS_LABELS)
 ACTIVE_CATEGORIES = ("builtin", "image_module", "header", "wireless_backport")
@@ -63,11 +63,11 @@ def package_key(name, packages):
 
 
 def bullets(values):
-    return ", ".join(f"`{v}`" for v in values) if values else "nenhum"
+    return ", ".join(f"`{v}`" for v in values) if values else "none"
 
 
 def findings_table(cves):
-    rows = ["| CVE | Componente | CVSS | Estado | Base da classificação |", "| --- | --- | --- | --- | --- |"]
+    rows = ["| CVE | Component | CVSS | Status | Basis |", "| --- | --- | --- | --- | --- |"]
     ordered = sorted(cves["findings"], key=lambda f: (STATUS_ORDER.index(f["status"]), -(f["score"] or 0), f["cve"]))
     for finding in ordered:
         score = finding["score"] if finding["score"] is not None else "—"
@@ -79,23 +79,23 @@ def findings_table(cves):
 
 
 def code_list(paths):
-    return ", ".join(f"`{p}`" for p in paths) if paths else "nenhuma"
+    return ", ".join(f"`{p}`" for p in paths) if paths else "none"
 
 
 def vulnerability_section(old_cves, new_cves, old_kernel, new_kernel, checks, triage, old_v, new_v):
     out = [
-        "## Vulnerabilidades",
+        "## Vulnerabilities",
         "",
-        f"Candidatos por versão no NVD e no OSV, consultados a {min(old_cves['consulted'], new_cves['consulted'])}. A classificação manual, quando existe, usa patches, commits e bytes da imagem.",
+        f"Candidates by version in NVD and OSV, consulted on {min(old_cves['consulted'], new_cves['consulted'])}. Manual classification, where it exists, uses patches, commits and image bytes.",
         "",
-        f"| Estado | {old_v} | {new_v} |",
+        f"| Status | {old_v} | {new_v} |",
         "| --- | --- | --- |",
     ]
     for status in STATUS_ORDER:
         counts = [sum(f["status"] == status for f in c["findings"]) for c in (old_cves, new_cves)]
         if any(counts):
             out.append(f"| {STATUS_LABELS[status]} | {counts[0]} | {counts[1]} |")
-    out.append(f"| **Total de candidatos** | **{len(old_cves['findings'])}** | **{len(new_cves['findings'])}** |")
+    out.append(f"| **Total candidates** | **{len(old_cves['findings'])}** | **{len(new_cves['findings'])}** |")
     for release, cves in ((old_v, old_cves), (new_v, new_cves)):
         out += ["", f"### OpenWrt {release}", "", *findings_table(cves)]
     return out + kernel_section(old_kernel, new_kernel, checks, triage, old_v, new_v)
@@ -129,32 +129,32 @@ def kernel_section(old_k, new_k, checks, triage, old_v, new_v):
         "",
         "### Kernel",
         "",
-        "Cada candidato foi comparado com os ficheiros e funções compilados, listados no DWARF oficial do `kernel-debug`, e com as versões corrigidas publicadas pela Linux CNA.",
-        "Um candidato só sai da lista com prova positiva. Os casos sem prova ficam em \"Por rever\". Se a correção mudar uma estrutura, ou se a alteração não for localizada no código, o CVE fica em aberto.",
+        "Each candidate was compared with the compiled files and functions, listed in the official `kernel-debug` DWARF, and with the fixed versions published by the Linux CNA.",
+        "A candidate only leaves the list on positive evidence. Cases without evidence stay in \"To review\". If the fix changes a struct, or the change cannot be located in the code, the CVE stays open.",
         "",
-        f"| Etapa | {old_k['version']} | {new_k['version']} |",
+        f"| Stage | {old_k['version']} | {new_k['version']} |",
         "| --- | --- | --- |",
-        funnel("Candidatos iniciais (NVD + OSV)", lambda k: k["total"]),
-        funnel("Corrigido nesta versão, ou nunca presente", tally("fixed_in_version")),
-        funnel("Código não compilado", tally("not_compiled")),
-        funnel("Só em módulo opcional, fora da imagem", tally("optional_module")),
-        funnel("Ficheiro compilado, mas a função alterada não", tally("function_not_compiled")),
-        funnel("Por rever, sem prova suficiente", lambda k: k["review"]),
-        funnel("Compilado, antes da revisão manual", lambda k: k["active"]),
-        funnel("Retirados na revisão manual", lambda k: len(active(k)) - len(still_open(k))),
-        funnel("**Em aberto após a revisão**", lambda k: f"**{len(still_open(k))}**"),
-        funnel("Críticos em aberto (CVSS)", severity("CRITICAL")),
-        funnel("Altos em aberto (CVSS)", severity("HIGH")),
-        funnel("Médios em aberto (CVSS)", severity("MEDIUM")),
-        funnel("Em aberto sem nota", severity("UNSCORED")),
+        funnel("Initial candidates (NVD + OSV)", lambda k: k["total"]),
+        funnel("Fixed in this version, or never present", tally("fixed_in_version")),
+        funnel("Code not compiled", tally("not_compiled")),
+        funnel("Only in an optional module, outside the image", tally("optional_module")),
+        funnel("File compiled, but not the changed function", tally("function_not_compiled")),
+        funnel("To review, not enough evidence", lambda k: k["review"]),
+        funnel("Compiled, before manual review", lambda k: k["active"]),
+        funnel("Removed by manual review", lambda k: len(active(k)) - len(still_open(k))),
+        funnel("**Open after review**", lambda k: f"**{len(still_open(k))}**"),
+        funnel("Open critical (CVSS)", severity("CRITICAL")),
+        funnel("Open high (CVSS)", severity("HIGH")),
+        funnel("Open medium (CVSS)", severity("MEDIUM")),
+        funnel("Open without a score", severity("UNSCORED")),
         "",
-        "\"Em aberto\" significa que o ficheiro está compilado e a correção não foi demonstrada. Não significa que a falha seja explorável neste router.",
-        f"A revisão manual cobriu os CVEs em aberto com CVSS igual ou superior a {REVIEW_SCORE}. Os restantes seguem a classificação automática.",
-        "A diferença entre versões é um sinal, não uma medida de risco: depende também do que foi registado para cada série.",
+        "\"Open\" means the file is compiled and the fix was not demonstrated. It does not mean the flaw is exploitable on this router.",
+        f"Manual review covered open CVEs with a CVSS of {REVIEW_SCORE} or higher. The rest follow the automatic classification.",
+        "The difference between versions is a signal, not a measure of risk: it also depends on what was recorded for each series.",
         "",
-        "**Retirados pelo filtro de funções:**",
+        "**Removed by the function filter:**",
         "",
-        "| Versão | CVE | CVSS | Código alterado pela correção, ausente nesta compilação |",
+        "| Version | CVE | CVSS | Code changed by the fix, absent from this build |",
         "| --- | --- | --- | --- |",
     ]
     for release, data in ((old_v, old_k), (new_v, new_k)):
@@ -165,13 +165,13 @@ def kernel_section(old_k, new_k, checks, triage, old_v, new_v):
     for release, data in ((old_v, old_k), (new_v, new_k)):
         rows = [f for f in data["findings"] if f["category"] in (*ACTIVE_CATEGORIES, "driver_fork") and (f["score"] or 0) >= REVIEW_SCORE]
         out += [
-            f"**Revisão manual em {release}:**",
+            f"**Manual review of {release}:**",
             "",
-            "| CVE | CVSS | Estado | Base da classificação |",
+            "| CVE | CVSS | Status | Basis |",
             "| --- | --- | --- | --- |",
         ]
         for finding in rows:
-            reason = verdicts[data["version"]].get(finding["cve"], {}).get("reason", "Sem triagem manual.")
+            reason = verdicts[data["version"]].get(finding["cve"], {}).get("reason", "No manual review.")
             out.append(f"| {finding['cve']} | {finding['score']} | {STATUS_LABELS[status(data, finding)]} | {reason} |")
         out.append("")
     old_c, new_c = checks
@@ -183,14 +183,14 @@ def kernel_section(old_k, new_k, checks, triage, old_v, new_v):
     exceptions = sorted(set(old_c["filter"]["contradictions"] + new_c["filter"]["contradictions"]))
     old_f, new_f = old_c["functions"], new_c["functions"]
     out += [
-        "**Como isto foi validado:**",
+        "**How this was validated:**",
         "",
-        f"- **Kernel certo:** {'nas duas versões, o `init_uts_ns` da imagem está no endereço dado pelos símbolos de depuração' if all(banners) else 'o kernel da imagem não foi confirmado nos símbolos de depuração em todas as versões'} ({old_k['version']} e {new_k['version']}). O `linux_banner` tem um desvio de {old_k['kernel_match']['banner_shift_bytes']} e {new_k['kernel_match']['banner_shift_bytes']} bytes.{' Este desvio não está explicado, por isso a prova é mais fraca do que um endereço exato.' if old_k['kernel_match']['banner_shift_bytes'] or new_k['kernel_match']['banner_shift_bytes'] else ''}",
-        f"- **Vereditos \"corrigido\" em código compilado:** {old_c['fixed']['total']} na {old_k['version']} e {new_c['fixed']['total']} na {new_k['version']}. A ferramenta confirmou {old_c['fixed']['tool']} e {new_c['fixed']['tool']} no código real. À mão: {code_list(by_hand)}. Por confirmar: {code_list(unresolved)}.",
-        f"- **Código \"não compilado\":** das regras diretas das Makefiles, {old_c['filter']['disabled']} de {old_c['filter']['checked']} e {new_c['filter']['disabled']} de {new_c['filter']['checked']} têm a opção desligada no `.config` real. Exceções: {code_list(exceptions)}.",
-        f"- **Controlos:** {code_list(controls)}. {'Todos ficaram na categoria esperada.' if not failed else 'Falharam: ' + code_list(sorted(set(failed))) + '.'}",
-        f"- **Filtro de funções:** {old_f['proved']} de {old_f['retired']} e {new_f['proved']} de {new_f['retired']} retirados confirmados fora da DWARF: a alteração está num módulo fora da imagem, ou numa função sem símbolo atrás de uma opção desligada no `.config` real.",
-        f"- **Funções dos ficheiros compilados:** {old_f['present']} e {new_f['present']} estão na DWARF, {old_f['absent_guarded']} e {new_f['absent_guarded']} estão atrás de opções desligadas, e {old_f['absent_unexplained']} e {new_f['absent_unexplained']} não têm rasto no binário nem opção identificada. Outras {old_f['absent_with_symbol']} e {new_f['absent_with_symbol']} têm um símbolo com o mesmo nome, vindo de outro ficheiro ou de assembly. Um nome presente noutro ficheiro da DWARF conta como compilado.",
+        f"- **Right kernel:** {'in both versions, the image `init_uts_ns` is at the address given by the debug symbols' if all(banners) else 'the image kernel was not confirmed against the debug symbols in all versions'} ({old_k['version']} and {new_k['version']}). `linux_banner` is off by {old_k['kernel_match']['banner_shift_bytes']} and {new_k['kernel_match']['banner_shift_bytes']} bytes.{' This offset is not explained, so the evidence is weaker than an exact address.' if old_k['kernel_match']['banner_shift_bytes'] or new_k['kernel_match']['banner_shift_bytes'] else ''}",
+        f"- **\"Fixed\" verdicts on compiled code:** {old_c['fixed']['total']} on {old_k['version']} and {new_c['fixed']['total']} on {new_k['version']}. The tool confirmed {old_c['fixed']['tool']} and {new_c['fixed']['tool']} in the real code. By hand: {code_list(by_hand)}. To confirm: {code_list(unresolved)}.",
+        f"- **\"Not compiled\" code:** of the direct Makefile rules, {old_c['filter']['disabled']} of {old_c['filter']['checked']} and {new_c['filter']['disabled']} of {new_c['filter']['checked']} have the option off in the real `.config`. Exceptions: {code_list(exceptions)}.",
+        f"- **Controls:** {code_list(controls)}. {'All landed in the expected category.' if not failed else 'Failed: ' + code_list(sorted(set(failed))) + '.'}",
+        f"- **Function filter:** {old_f['proved']} of {old_f['retired']} and {new_f['proved']} of {new_f['retired']} removals confirmed outside the DWARF: the change is in a module outside the image, or in a function with no symbol behind an option that is off in the real `.config`.",
+        f"- **Functions in compiled files:** {old_f['present']} and {new_f['present']} are in the DWARF, {old_f['absent_guarded']} and {new_f['absent_guarded']} sit behind disabled options, and {old_f['absent_unexplained']} and {new_f['absent_unexplained']} leave no trace in the binary and have no identified option. Another {old_f['absent_with_symbol']} and {new_f['absent_with_symbol']} have a symbol with the same name, from another file or from assembly. A name present in another DWARF file counts as compiled.",
         "",
     ]
     return out
@@ -209,28 +209,28 @@ def report(device, old, new, old_cves, new_cves, old_kernel, new_kernel, checks,
     out = [
         f"# {device}: OpenWrt {old_v} → {new_v}",
         "",
-        "Análise estática das imagens `sysupgrade` oficiais. Nenhum código do firmware foi executado.",
+        "Static analysis of the official `sysupgrade` images. No firmware code was run.",
         "",
-        "## Resumo",
+        "## Summary",
         "",
-        "| Medida | " + old_v + " | " + new_v + " |",
+        "| Measure | " + old_v + " | " + new_v + " |",
         "| --- | --- | --- |",
         f"| Kernel | `{old['kernel_image']}` | `{new['kernel_image']}` |",
-        f"| Gestor de pacotes | {old['package_manager']} | {new['package_manager']} |",
-        f"| Tamanho da imagem | {old['bytes']:,} bytes | {new['bytes']:,} bytes |",
-        f"| Pacotes instalados | {len(old_p)} | {len(new_p)} |",
-        f"| Entradas de ficheiros | {len(old['files'])} | {len(new['files'])} |",
-        f"| Programas PIE | {old_h['pie']} de {old_h['programs']} | {new_h['pie']} de {new_h['programs']} |",
-        f"| Marcados NX | {old_h['nx']} de {old_h['userland']} | {new_h['nx']} de {new_h['userland']} |",
-        f"| Full RELRO | {old_h['full_relro']} de {old_h['userland']} | {new_h['full_relro']} de {new_h['userland']} |",
-        f"| Com canário de pilha | {old_h['canary']} de {old_h['userland']} | {new_h['canary']} de {new_h['userland']} |",
-        f"| Ficheiros setuid/setgid | {sum(1 for f in old['files'].values() if f.get('setuid'))} | {sum(1 for f in new['files'].values() if f.get('setuid'))} |",
-        f"| Candidatos a segredos | {len(old['secret_candidates'])} | {len(new['secret_candidates'])} |",
-        f"| Palavra-passe de `root` por omissão | {ROOT_LABELS[old['accounts'].get('root')]} | {ROOT_LABELS[new['accounts'].get('root')]} |",
+        f"| Package manager | {old['package_manager']} | {new['package_manager']} |",
+        f"| Image size | {old['bytes']:,} bytes | {new['bytes']:,} bytes |",
+        f"| Installed packages | {len(old_p)} | {len(new_p)} |",
+        f"| File entries | {len(old['files'])} | {len(new['files'])} |",
+        f"| PIE programs | {old_h['pie']} of {old_h['programs']} | {new_h['pie']} of {new_h['programs']} |",
+        f"| Marked NX | {old_h['nx']} of {old_h['userland']} | {new_h['nx']} of {new_h['userland']} |",
+        f"| Full RELRO | {old_h['full_relro']} of {old_h['userland']} | {new_h['full_relro']} of {new_h['userland']} |",
+        f"| With stack canary | {old_h['canary']} of {old_h['userland']} | {new_h['canary']} of {new_h['userland']} |",
+        f"| Setuid/setgid files | {sum(1 for f in old['files'].values() if f.get('setuid'))} | {sum(1 for f in new['files'].values() if f.get('setuid'))} |",
+        f"| Secret candidates | {len(old['secret_candidates'])} | {len(new['secret_candidates'])} |",
+        f"| Default `root` password | {ROOT_LABELS[old['accounts'].get('root')]} | {ROOT_LABELS[new['accounts'].get('root')]} |",
         "",
-        "## Componentes principais",
+        "## Main components",
         "",
-        "| Pacote | " + old_v + " | " + new_v + " |",
+        "| Package | " + old_v + " | " + new_v + " |",
         "| --- | --- | --- |",
     ]
     for name in KEY_PACKAGES:
@@ -240,24 +240,24 @@ def report(device, old, new, old_cves, new_cves, old_kernel, new_kernel, checks,
 
     out += [
         "",
-        "## Pacotes",
+        "## Packages",
         "",
-        f"{len(added)} adicionados, {len(removed)} removidos e {len(changed)} com versão alterada.",
+        f"{len(added)} added, {len(removed)} removed and {len(changed)} with a changed version.",
         "",
-        f"- **Adicionados:** {bullets(added)}",
-        f"- **Removidos:** {bullets(removed)}",
+        f"- **Added:** {bullets(added)}",
+        f"- **Removed:** {bullets(removed)}",
         "",
-        "## Serviços e programas",
+        "## Services and programs",
         "",
-        f"- **Scripts de serviço adicionados:** {bullets(sorted(set(new['services']) - set(old['services'])))}",
-        f"- **Scripts de serviço removidos:** {bullets(sorted(set(old['services']) - set(new['services'])))}",
-        f"- **Arranque automático adicionado:** {bullets(sorted(set(new['enabled_services']) - set(old['enabled_services'])))}",
-        f"- **Arranque automático removido:** {bullets(sorted(set(old['enabled_services']) - set(new['enabled_services'])))}",
-        f"- **Programas adicionados:** {bullets(sorted(new_programs - old_programs))}",
-        f"- **Programas removidos:** {bullets(sorted(old_programs - new_programs))}",
-        f"- **Programas sem PIE em {new_v}:** {bullets(new_h['non_pie'])}",
+        f"- **Service scripts added:** {bullets(sorted(set(new['services']) - set(old['services'])))}",
+        f"- **Service scripts removed:** {bullets(sorted(set(old['services']) - set(new['services'])))}",
+        f"- **Autostart added:** {bullets(sorted(set(new['enabled_services']) - set(old['enabled_services'])))}",
+        f"- **Autostart removed:** {bullets(sorted(set(old['enabled_services']) - set(new['enabled_services'])))}",
+        f"- **Programs added:** {bullets(sorted(new_programs - old_programs))}",
+        f"- **Programs removed:** {bullets(sorted(old_programs - new_programs))}",
+        f"- **Programs without PIE in {new_v}:** {bullets(new_h['non_pie'])}",
         "",
-        "## Configurações por omissão",
+        "## Default settings",
         "",
     ]
     for path in sorted(set(old["configs"]) | set(new["configs"])):
@@ -265,30 +265,30 @@ def report(device, old, new, old_cves, new_cves, old_kernel, new_kernel, checks,
             old["configs"].get(path, "").splitlines(), new["configs"].get(path, "").splitlines(),
             old_v, new_v, lineterm="", n=3,
         ))
-        out.append(f"**`{path}`:** " + ("sem alterações." if not diff else ""))
+        out.append(f"**`{path}`:** " + ("no changes." if not diff else ""))
         if diff:
             out += ["", "```diff", *diff, "```"]
         out.append("")
 
     out += vulnerability_section(old_cves, new_cves, old_kernel, new_kernel, checks, triage, old_v, new_v)
     out += [
-        "## Limites desta análise",
+        "## Limits of this analysis",
         "",
-        "- A comparação cobre a configuração incluída na imagem, não o que corre num router já configurado.",
-        "- `NX` é a marca no ELF. Não prova que o processador a aplique neste dispositivo.",
-        "- A ausência de canário significa que o binário não referencia `__stack_chk_fail`, o que pode acontecer sem haver funções a proteger.",
-        "- Um CVE do kernel fica em aberto se uma função alterada pela correção estiver compilada, ou se a alteração não puder ser mapeada para uma função. Isto não prova que a função seja alcançável nem que a funcionalidade esteja ativa.",
-        "- O filtro de funções não cobre o Wi-Fi nem alterações a estruturas e macros. Esses CVEs ficam em aberto.",
-        "- Um cabeçalho só com macros não deixa rasto na DWARF. Quando está junto de código compilado, o CVE fica em \"Por rever\".",
-        "- As versões corrigidas vêm da Linux CNA. A confirmação no código usou o kernel oficial, sem as patches que o OpenWrt lhe aplica.",
-        "- O Wi-Fi usa backports. Os seus vereditos seguem a versão dos backports e só foram confirmados no código quando a revisão manual o indica. Drivers com árvore própria, como ath10k-ct e mt76, ficam em \"Por rever\".",
-        "- A revisão manual avaliou a configuração incluída na imagem. Um CVE marcado como \"Código sem uso\" volta a contar se a funcionalidade for ativada.",
-        "- Módulos opcionais estão fora da contagem, mas passam a contar se forem instalados.",
-        "- Os estados das vulnerabilidades vêm de análise estática: nenhuma falha foi testada num dispositivo.",
-        "- Os pacotes hostapd/wpad usam snapshots por data e não têm versão upstream comparável, por isso não foram correlacionados.",
-        "- Instalar pacotes extra pode tornar relevantes componentes marcados como não aplicáveis ou sem uso.",
+        "- The comparison covers the configuration shipped in the image, not what runs on an already configured router.",
+        "- `NX` is the ELF flag. It does not prove that the processor enforces it on this device.",
+        "- A missing canary means the binary does not reference `__stack_chk_fail`, which can happen when no function needs protection.",
+        "- A kernel CVE stays open if a function changed by the fix is compiled, or if the change cannot be mapped to a function. This does not prove that the function is reachable or that the feature is active.",
+        "- The function filter does not cover Wi-Fi or changes to structs and macros. Those CVEs stay open.",
+        "- A macro-only header leaves no trace in DWARF. When it sits next to compiled code, the CVE stays in \"To review\".",
+        "- Fixed versions come from the Linux CNA. Confirmation in the code used the official kernel, without the patches OpenWrt applies to it.",
+        "- Wi-Fi uses backports. Its verdicts follow the backports version and were only confirmed in the code where the manual review says so. Drivers with their own tree, such as ath10k-ct and mt76, stay in \"To review\".",
+        "- Manual review assessed the configuration shipped in the image. A CVE marked \"Unused code\" counts again if the feature is enabled.",
+        "- Optional modules are outside the count, but count once installed.",
+        "- Vulnerability statuses come from static analysis: no flaw was tested on a device.",
+        "- The hostapd/wpad packages use dated snapshots with no comparable upstream version, so they were not correlated.",
+        "- Installing extra packages can make components marked as not applicable or unused relevant.",
         "",
-        "## Proveniência",
+        "## Provenance",
         "",
         f"- `{old['image']}`: SHA-256 `{old['sha256']}`",
         f"- `{new['image']}`: SHA-256 `{new['sha256']}`",

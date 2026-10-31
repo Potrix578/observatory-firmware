@@ -115,7 +115,7 @@ if __name__ == "__main__":
                 tally["absent_guarded"] += 1
             elif name in symbols:
                 tally["absent_with_symbol"] += 1
-                unexplained.append(f"{path}:{name} (tem símbolo)")
+                unexplained.append(f"{path}:{name} (has symbol)")
             else:
                 tally["absent_unexplained"] += 1
                 unexplained.append(f"{path}:{name}")
