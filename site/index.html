@@ -43,6 +43,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { background: var(--paper); color: var(--ink); font: 400 16px/1.55 var(--body); margin: 0; }
 a { color: var(--accent); text-underline-offset: 2px; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -50,17 +51,18 @@ a { color: var(--accent); text-underline-offset: 2px; }
 
 .masthead { background: var(--mask); color: var(--mask-ink); border-bottom: 5px dotted var(--pin); }
 .masthead .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding-block: 14px; }
-.wordmark { color: inherit; font: 600 1.45rem/1 var(--display); letter-spacing: .04em; text-transform: uppercase; text-decoration: none; }
+.wordmark { display: inline-flex; align-items: center; gap: 9px; color: inherit; font: 600 1.45rem/1 var(--display); letter-spacing: .04em; text-transform: uppercase; text-decoration: none; }
+.wordmark::before { content: ""; width: 12px; height: 16px; border: 2px solid var(--pin); box-shadow: -4px 0 0 -2px var(--pin), 4px 0 0 -2px var(--pin); }
 .nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .nav a { color: var(--mask-2); font: 500 .8rem/1.6 var(--mono); text-decoration: none; padding-block: 4px; border-bottom: 2px solid transparent; }
 .nav a[aria-current="page"], .nav a:hover { color: var(--mask-ink); border-bottom-color: var(--pin); }
 
-main { padding-block: 32px 56px; display: grid; gap: 48px; }
+main { padding-block: 28px 56px; display: grid; gap: 40px; }
 main > * { min-width: 0; }
 section { display: grid; gap: 16px; min-width: 0; }
 section > * { min-width: 0; }
 h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.08; margin: 0; text-wrap: balance; }
-h1 { font-size: clamp(2.3rem, 6vw, 3.6rem); max-width: 19ch; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); max-width: 20ch; }
 h2 { font-size: 1.75rem; letter-spacing: .01em; padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
 h3 { font-size: 1.25rem; }
 p { margin: 0; max-width: 68ch; }
@@ -107,16 +109,73 @@ td.wide { min-width: 22rem; }
   table.stack tr { padding-block: 8px; border-bottom: 1px solid var(--rule); }
   table.stack tr:last-child { border-bottom: 0; }
 }
-.report { display: inline-block; margin-top: 6px; font-size: .82rem; }
-.short { padding: 18px 20px; background: var(--panel); border: 1px solid var(--rule); gap: 10px; }
-.short b { font-weight: 600; color: var(--ink); }
-.short .lead { color: var(--ink); }
+.report { display: inline-block; font-size: .78rem; color: var(--ink-2); }
 .sheet-head { display: grid; gap: 12px; }
-.spec { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.spec { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+@media (max-width: 760px) { .spec { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .spec div { background: var(--panel); padding: 8px 12px; min-width: 0; }
 .spec dt { font: 500 .72rem/1.3 var(--mono); color: var(--ink-2); }
 .spec dd { margin: 2px 0 0; font: 500 .9rem/1.35 var(--mono); overflow-wrap: anywhere; }
 dl { margin: 0; }
+
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 40px; align-items: center; padding: 24px; background: var(--panel); border: 1px solid var(--rule); }
+.verdict-text { display: grid; gap: 10px; min-width: 0; }
+.verdict h2 { border: 0; padding: 0; font-size: clamp(2rem, 4.4vw, 2.9rem); }
+.kicker { font: 500 .76rem/1.3 var(--mono); color: var(--ink-2); }
+.verdict .note { grid-column: 1 / -1; padding-top: 12px; border-top: 1px solid var(--rule); max-width: none; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(5.4rem, 1fr)); gap: 8px; }
+.tile { display: grid; gap: 4px; padding: 10px 12px; background: var(--quiet-bg); color: var(--quiet); }
+.tile.good { background: var(--good-bg); color: var(--good); }
+.tile.bad { background: var(--bad-bg); color: var(--bad); }
+.tile dt { font-size: .78rem; font-weight: 600; }
+.tile dd { margin: 0; font: 600 2.1rem/1 var(--display); font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) { .verdict { grid-template-columns: minmax(0, 1fr); padding: 18px; } }
+
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; background: var(--paper); border-bottom: 2px solid var(--rule); }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { flex: none; padding: 10px 12px; font: 600 1.08rem/1 var(--display); letter-spacing: .02em; color: var(--ink-2); background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--pin); }
+.panel { display: grid; gap: 36px; min-width: 0; }
+.panel > * { min-width: 0; }
+.sheet { display: grid; gap: 24px; min-width: 0; }
+.sheet > * { min-width: 0; }
+
+.issues { display: grid; gap: 10px; }
+.issue { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); gap: 14px; padding: 14px; background: var(--panel); border: 1px solid var(--rule); }
+.score { display: grid; align-content: center; justify-items: center; gap: 2px; padding: 8px 4px; background: var(--quiet-bg); color: var(--quiet); }
+.score b { font: 600 1.6rem/1 var(--display); font-variant-numeric: tabular-nums; }
+.score span { font-size: .68rem; font-weight: 600; }
+.score.critical { background: var(--bad); color: var(--panel); }
+.score.high { background: var(--bad-bg); color: var(--bad); }
+.score.medium { background: var(--warn-bg); color: var(--warn); }
+.issue-body { display: grid; gap: 5px; justify-items: start; min-width: 0; }
+.issue-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.issue h4 { margin: 0; font: 500 .9rem/1.4 var(--mono); }
+.more { padding: 0; background: none; border: 0; }
+.more > summary { padding: 10px 12px; background: var(--panel); border: 1px solid var(--rule); font: 600 .92rem/1.3 var(--body); }
+.more[open] > summary { margin-bottom: 10px; }
+.why { padding: 0; background: none; border: 0; margin-top: 4px; }
+.why > summary { font: 400 .82rem/1.4 var(--body); color: var(--accent); }
+.why p { margin-top: 4px; font-size: .88rem; color: var(--ink-2); }
+.jump { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; padding: 14px 16px; background: var(--panel); border: 1px solid var(--rule); }
+.jump .big { font-size: 2.1rem; }
+.link-button { font: 600 .9rem/1.3 var(--body); padding: 0; background: none; border: 0; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px 48px; align-items: end; }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.steps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 2px 8px; font-size: .9rem; color: var(--ink-2); }
+.steps li::before { content: counter(step); grid-row: span 2; font: 600 1.3rem/1.1 var(--display); color: var(--pin); }
+.steps b { color: var(--ink); font-weight: 600; }
+.chip-verdict { font: 600 1.15rem/1.2 var(--display); }
+.chip-tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: .86rem; color: var(--ink-2); }
+.chip-foot b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.chip:hover .chip-open { text-decoration: underline; }
+.chip-open { color: var(--accent); font-weight: 600; }
+footer a { color: inherit; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-bottom: 8px; font-weight: 600; }
 
 .answer { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 12px 32px; align-items: center; }
 .answer .big { font-size: clamp(3.4rem, 11vw, 5.2rem); white-space: nowrap; }
@@ -200,47 +259,79 @@ function likelyIssues(device) {
   return [...kernel, ...programs].sort((a, b) => (b.score || 0) - (a.score || 0));
 }
 
-function plainAnswer(device, issues) {
+function severity(value) {
+  if (value == null) return { key: "", label: "No score" };
+  if (value >= 9) return { key: "critical", label: "Critical" };
+  if (value >= 7) return { key: "high", label: "High" };
+  if (value >= 4) return { key: "medium", label: "Medium" };
+  return { key: "", label: "Low" };
+}
+
+function outcome(issues) {
   const gone = issues.filter((i) => i.before && !i.after);
   const added = issues.filter((i) => i.after && !i.before);
+  const kept = issues.filter((i) => i.before && i.after);
+  const headline = gone.length > added.length ? "Updating looks worthwhile"
+    : gone.length < added.length ? "Updating adds more issues than it removes"
+    : "Updating does not clearly change the picture";
+  return { gone, added, kept, headline };
+}
+
+function plainAnswer(device, issues) {
+  const { gone, added, kept, headline } = outcome(issues);
   const word = (count) => `${number.format(count)} ${count === 1 ? "issue" : "issues"}`;
-  const opening = gone.length > added.length ? "On this evidence, updating looks worthwhile."
-    : gone.length < added.length ? "On this evidence, updating adds more reviewed issues than it removes."
-    : "On this evidence, updating does not clearly change the picture.";
   const worst = added[0] ? ` The most severe new one is ${cveLink(added[0].cve)}, with a CVSS of ${score(added[0].score)}.` : "";
   const manager = device.image.facts.find((f) => f.label === "Package manager");
   const moved = manager.old !== manager.new ? `<p>The package manager also changes from <code>${esc(manager.old)}</code> to <code>${esc(manager.new)}</code>, so your own scripts may need updating.</p>` : "";
-  return `<section class="short" aria-label="In short">
-      <p class="lead"><b>${opening}</b> Updating from ${esc(device.old)} to ${esc(device.new)} removes ${word(gone.length)} we consider likely present and adds ${word(added.length)}.${worst}</p>
-      ${moved}
-      <p class="note">This covers only issues reviewed by hand. It does not prove the update is safe, and it cannot see problems nobody has reported.</p>
+  return `<section class="verdict" aria-label="In short">
+      <div class="verdict-text">
+        <div class="kicker">Based on issues reviewed by hand</div>
+        <h2>${headline}</h2>
+        <p>Updating from ${esc(device.old)} to ${esc(device.new)} removes ${word(gone.length)} we consider likely present and adds ${word(added.length)}.${worst}</p>
+        ${moved}
+      </div>
+      <dl class="tiles" aria-label="Likely issues after updating">
+        <div class="tile good"><dt>Removed</dt><dd>−${number.format(gone.length)}</dd></div>
+        <div class="tile bad"><dt>New</dt><dd>+${number.format(added.length)}</dd></div>
+        <div class="tile"><dt>Stay</dt><dd>${number.format(kept.length)}</dd></div>
+      </dl>
+      <p class="note">This does not prove the update is safe. It covers only issues reviewed by hand, and it cannot see problems nobody has reported.</p>
     </section>`;
 }
 
-function issueTable(device, rows, caption, field, change) {
-  const body = rows.map((issue) => {
-    const label = change(issue);
-    const verdict = `Likely present (${field === "after" ? device.new : device.old})`;
-    return `<tr><td class="id">${cveLink(issue.cve)}<div class="ref">${esc(issue.where)}</div></td><td class="num">${score(issue.score)}</td>
-      <td><span class="pill ${label}">${CHANGES[label]}</span></td>
-      <td class="wide"><div class="note">${esc(issue[field])}</div>${reportLink(device, issue.cve, verdict)}</td></tr>`;
-  }).join("");
-  return `<div class="table-box"><table class="stack"><caption>${esc(caption)}</caption>
-    <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Change</th><th>Why it matters here</th></tr></thead><tbody>${body}</tbody></table></div>`;
+/* CVEs with the same reason, such as the four awk ones, read better as one entry. */
+function issueCards(device, rows, field, change) {
+  const groups = new Map();
+  rows.forEach((issue) => {
+    const key = `${issue.where}|${change(issue)}|${issue[field]}`;
+    if (!groups.has(key)) groups.set(key, { where: issue.where, change: change(issue), reason: issue[field], score: issue.score, cves: [] });
+    groups.get(key).cves.push(issue.cve);
+  });
+  return `<div class="issues">${[...groups.values()].map((group) => {
+    const level = severity(group.score);
+    const release = field === "after" ? device.new : device.old;
+    return `<article class="issue">
+      <div class="score ${level.key}" title="CVSS ${score(group.score)}"><b>${score(group.score)}</b><span>${level.label}</span></div>
+      <div class="issue-body">
+        <div class="issue-head"><span class="pill ${group.change}">${CHANGES[group.change]}</span><span class="ref">${esc(group.where)}</span></div>
+        <h4>${group.cves.map(cveLink).join(", ")}</h4>
+        <p class="note">${esc(group.reason)}</p>
+        ${reportLink(device, group.cves.join(", "), `Likely present (${release})`)}
+      </div>
+    </article>`;
+  }).join("")}</div>`;
 }
 
 function lookFirst(device, issues) {
   const after = issues.filter((i) => i.after);
   const gone = issues.filter((i) => i.before && !i.after);
-  const afterTable = after.length ? issueTable(device, after, `Likely present after updating to ${device.new}`, "after", (i) => (i.before ? "stayed" : "entered")) : '<p class="note">None.</p>';
-  const goneTable = gone.length ? issueTable(device, gone, `Gone after updating to ${device.new}`, "before", () => "left") : '<p class="note">None.</p>';
+  const afterCards = after.length ? issueCards(device, after, "after", (i) => (i.before ? "stayed" : "entered")) : '<p class="note">None.</p>';
+  const goneCards = gone.length ? `<details class="more"><summary>${number.format(gone.length)} likely ${gone.length === 1 ? "issue goes" : "issues go"} away after updating</summary>${issueCards(device, gone, "before", () => "left")}</details>` : "";
   return `<section>
       <h2>Look at these first</h2>
-      <p>These were reviewed by hand and are likely present on this router. A high CVSS alone does not put a CVE on this list.</p>
-      <h3>After updating to ${esc(device.new)}</h3>
-      ${afterTable}
-      <h3>Gone after updating</h3>
-      ${goneTable}
+      <p>Reviewed by hand and likely present after updating to ${esc(device.new)}. A high CVSS alone does not put a CVE here.</p>
+      ${afterCards}
+      ${goneCards}
     </section>`;
 }
 
@@ -256,21 +347,30 @@ function stackedBars(rows, segments, maximum, unit) {
 function home() {
   const cards = DATA.devices.map((d) => {
     const [before, after] = d.splits;
+    const { gone, added, kept, headline } = outcome(likelyIssues(d));
     return `<a class="chip" href="#${esc(d.id)}">
-      <div class="ref">${esc(d.target)}</div>
+      <div class="ref">${esc(d.target)} · OpenWrt ${esc(d.old)} → ${esc(d.new)}</div>
       <h3>${esc(d.name)}</h3>
-      <div class="big">${number.format(before.open)} <span>→</span> ${number.format(after.open)}</div>
-      <p class="note">Open kernel CVEs, from OpenWrt ${esc(d.old)} to ${esc(d.new)}. ${number.format(d.counts.left)} go away and ${number.format(d.counts.entered)} are new.</p>
+      <div class="chip-verdict">${headline}</div>
+      <div class="chip-tiles"><span class="pill left">${number.format(gone.length)} removed</span><span class="pill entered">${number.format(added.length)} new</span><span class="pill stayed">${number.format(kept.length)} stay</span></div>
+      <div class="chip-foot"><span><b>${number.format(before.open)} → ${number.format(after.open)}</b> open kernel CVEs</span><span class="chip-open">Open sheet</span></div>
     </a>`;
   }).join("");
   const rows = DATA.differences.map((row) => `<tr>
       <td class="id">${cveLink(row.cve)}<div class="ref">CVSS ${score(row.score)} · ${esc(row.release)}</div></td>
-      ${row.verdicts.map((v) => `<td class="wide">${pill(v.status)}<div class="note">${esc(v.reason)}</div></td>`).join("")}
+      ${row.verdicts.map((v) => `<td>${pill(v.status)}<details class="why"><summary>Why</summary><p>${esc(v.reason)}</p></details></td>`).join("")}
     </tr>`).join("");
   const names = DATA.differences[0]?.verdicts.map((v) => `<th>${esc(deviceName(v.device))}</th>`).join("") || "";
-  return `<section class="intro">
-      <h1>What changes on your router when you update the firmware?</h1>
-      <p class="lead">We compare official OpenWrt images, version by version and model by model. Each CVE is checked against what was actually compiled for that router, and the most severe ones are reviewed by hand.</p>
+  return `<section class="hero">
+      <div class="intro">
+        <h1>What changes on your router when you update the firmware?</h1>
+        <p class="lead">Generic CVE lists rarely say whether a flaw applies to your device. Here, each router gets its own answer.</p>
+      </div>
+      <ol class="steps" aria-label="How it works">
+        <li><b>Official images</b><span>Downloaded from OpenWrt and verified by hash.</span></li>
+        <li><b>Compiled code</b><span>Each CVE is checked against what was built for that router.</span></li>
+        <li><b>Hand review</b><span>Every open CVE with a CVSS of 8.0 or higher is read in the code.</span></li>
+      </ol>
     </section>
     <section aria-label="Routers analyzed"><div class="chips">${cards}</div></section>
     <section>
@@ -328,6 +428,37 @@ function cveTable(device) {
   return { markup, bind };
 }
 
+const TABS = [["overview", "Overview"], ["cves", "Kernel CVEs"], ["review", "Manual review"], ["programs", "Programs"], ["image", "Image changes"], ["method", "How it was verified"]];
+let activeTab = "overview";
+
+function selectTab(key, focus) {
+  activeTab = key;
+  TABS.forEach(([name]) => {
+    const selected = name === key;
+    const button = document.getElementById(`tab-${name}`);
+    button.setAttribute("aria-selected", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    document.getElementById(`panel-${name}`).hidden = !selected;
+    if (selected && focus) button.focus();
+  });
+  document.getElementById(`tab-${key}`).scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+function bindTabs() {
+  document.querySelectorAll("[data-tab]").forEach((button) => {
+    button.addEventListener("click", () => selectTab(button.dataset.tab, false));
+    button.addEventListener("keydown", (event) => {
+      const names = TABS.map(([name]) => name);
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+      if (step) {
+        event.preventDefault();
+        selectTab(names[(names.indexOf(button.dataset.tab) + step + names.length) % names.length], true);
+      }
+    });
+  });
+  document.querySelectorAll("[data-go]").forEach((button) => button.addEventListener("click", () => selectTab(button.dataset.go, false)));
+}
+
 function sheet(device) {
   const [before, after] = device.splits;
   const image = device.image;
@@ -365,6 +496,90 @@ function sheet(device) {
     `Function filter: ${number.format(check.functions_proved)} of ${number.format(check.functions_retired)} removals have evidence independent of the method that removed them.`,
     `Controls: ${check.controls_ok ? "all landed in the expected category." : "at least one failed."}`,
   ].map((text) => `<li>${text}</li>`).join("");
+  const panels = {
+    overview: `${plainAnswer(device, issues)}
+      ${lookFirst(device, issues)}
+      <div class="jump">
+        <div class="big">${number.format(before.open)} <span>→</span> ${number.format(after.open)}</div>
+        <p class="note">Open kernel CVEs that follow the automatic classification or were reviewed as likely present.</p>
+        <button type="button" class="link-button" data-go="cves">See all kernel CVEs</button>
+      </div>`,
+    cves: `<section>
+        <h2>Open kernel CVEs</h2>
+        <div class="answer">
+          <div class="big">${number.format(before.open)} <span>→</span> ${number.format(after.open)}</div>
+          <div class="intro">
+            <p>${direction} This is a signal, not a measure of risk: the count also depends on what was recorded for each kernel series.</p>
+            <div class="tally"><span><b>${number.format(device.counts.left)}</b>gone</span><span><b>${number.format(device.counts.entered)}</b>new</span><span><b>${number.format(device.counts.stayed)}</b>still open</span></div>
+          </div>
+        </div>
+        <p class="note">Open means the code is compiled and the fix was not demonstrated. It does not prove that the flaw is exploitable on this router.</p>
+      </section>
+      <section>
+        <h2>Where the candidates went</h2>
+        ${bars}
+        <details><summary>Numbers by stage</summary><div class="table-box"><table><caption>Kernel candidates by stage</caption>
+          <thead><tr><th>Stage</th><th class="num">${esc(device.old)}</th><th class="num">${esc(device.new)}</th></tr></thead><tbody>${splitRows}</tbody></table></div></details>
+      </section>
+      <section>
+        <h2>All open kernel CVEs</h2>
+        ${table.markup}
+      </section>`,
+    review: `<section>
+        <h2>Manual review</h2>
+        <p>Every CVE with a CVSS of 8.0 or higher was read in the code of this router. CVSS is a generic score, and this verdict is what counts here.</p>
+        <div class="table-box"><table class="stack"><caption>Manual verdicts</caption>
+          <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Verdict and reason</th></tr></thead><tbody>${reviewed}</tbody></table></div>
+      </section>`,
+    programs: `<section>
+        <h2>Programs outside the kernel</h2>
+        <div class="table-box"><table><caption>Program CVEs</caption>
+          <thead><tr><th>CVE</th><th>Program</th><th class="num">CVSS</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th><th>Reason</th></tr></thead><tbody>${components}</tbody></table></div>
+      </section>`,
+    image: `<section>
+        <h2>Image map</h2>
+        ${mapBars}
+        <p class="note">${image.map.map((m) => `${esc(m.release)}: file system from <code>${hex(m.kernel)}</code>, ${megabytes(m.bytes)} in total.`).join(" ")}</p>
+      </section>
+      <section>
+        <h2>Measures and packages</h2>
+        <div class="columns">
+          <div class="table-box"><table><caption>Image measures</caption><thead><tr><th>Measure</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${facts}</tbody></table></div>
+          <div class="table-box"><table><caption>Main packages</caption><thead><tr><th>Package</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${packages}</tbody></table></div>
+        </div>
+        <p>${number.format(image.packages_added.length)} packages added, ${number.format(image.packages_removed.length)} removed and ${number.format(image.packages_changed)} with a changed version.</p>
+        <div class="columns">
+          <div><h3>Packages added</h3>${list(image.packages_added)}</div>
+          <div><h3>Packages removed</h3>${list(image.packages_removed)}</div>
+          <div><h3>Programs added</h3>${list(image.programs_added)}</div>
+          <div><h3>Programs removed</h3>${list(image.programs_removed)}</div>
+        </div>
+      </section>
+      <section>
+        <h2>Default settings</h2>
+        ${configs}
+      </section>`,
+    method: `<section>
+        <h2>How this was verified</h2>
+        <ul class="plain">${checks}</ul>
+        <p>Found a mistake? <a href="${REPOSITORY}/issues/new" target="_blank" rel="noopener">Open an issue on GitHub</a> with the evidence, or see the <a href="${REPOSITORY}" target="_blank" rel="noopener">code and full reports</a>.</p>
+      </section>
+      <section>
+        <h2>Limits</h2>
+        <ul class="plain">
+          <li>All of this is static analysis. Nothing was tested on a device.</li>
+          <li>The analysis covers the configuration shipped in the image, not an already configured router.</li>
+          <li>Installing packages or enabling features can make a CVE marked as outside this router relevant.</li>
+          <li>CVEs below CVSS 8.0 follow the automatic classification.</li>
+          <li>The kernel was read without the OpenWrt patches, except in manual reviews that mention them.</li>
+          <li>hostapd and wpad were not correlated, because they use dated snapshots.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Images analyzed</h2>
+        <div class="table-box"><table><caption>Provenance</caption><thead><tr><th>Version</th><th>Official image</th><th>SHA-256</th></tr></thead><tbody>${provenance}</tbody></table></div>
+      </section>`,
+  };
   app.innerHTML = `<section class="sheet-head">
       <div class="ref">${esc(device.id)}</div>
       <h1>${esc(device.name)}</h1>
@@ -375,75 +590,13 @@ function sheet(device) {
         <div><dt>CVEs consulted</dt><dd>${esc(check.consulted)}</dd></div>
       </dl>
     </section>
-    ${plainAnswer(device, issues)}
-    ${lookFirst(device, issues)}
-    <section>
-      <h2>Open kernel CVEs</h2>
-      <div class="answer">
-        <div class="big">${number.format(before.open)} <span>→</span> ${number.format(after.open)}</div>
-        <div class="intro">
-          <p class="lead">${direction} This is a signal, not a measure of risk: the count also depends on what was recorded for each kernel series.</p>
-          <div class="tally"><span><b>${number.format(device.counts.left)}</b>gone</span><span><b>${number.format(device.counts.entered)}</b>new</span><span><b>${number.format(device.counts.stayed)}</b>still open</span></div>
-        </div>
+    <div class="sheet">
+      <div class="tabs" role="tablist" aria-label="Sheet sections">
+        ${TABS.map(([key, label]) => `<button type="button" role="tab" id="tab-${key}" aria-controls="panel-${key}" aria-selected="${key === activeTab}" tabindex="${key === activeTab ? 0 : -1}" data-tab="${key}">${label}</button>`).join("")}
       </div>
-      <p class="note">Open means the code is compiled and the fix was not demonstrated. It does not prove that the flaw is exploitable on this router.</p>
-    </section>
-    <section>
-      <h2>Where the candidates went</h2>
-      ${bars}
-      <div class="table-box"><table><caption>Kernel candidates by stage</caption>
-        <thead><tr><th>Stage</th><th class="num">${esc(device.old)}</th><th class="num">${esc(device.new)}</th></tr></thead><tbody>${splitRows}</tbody></table></div>
-    </section>
-    <section>
-      <h2>Manual review</h2>
-      <p>Every CVE with a CVSS of 8.0 or higher was read in the code of this router. CVSS is a generic score, and this verdict is what counts here.</p>
-      <div class="table-box"><table class="stack"><caption>Manual verdicts</caption>
-        <thead><tr><th>CVE</th><th class="num">CVSS</th><th>Verdict and reason</th></tr></thead><tbody>${reviewed}</tbody></table></div>
-    </section>
-    <section>
-      <h2>All open kernel CVEs</h2>
-      ${table.markup}
-    </section>
-    <section>
-      <h2>Programs outside the kernel</h2>
-      <div class="table-box"><table><caption>Program CVEs</caption>
-        <thead><tr><th>CVE</th><th>Program</th><th class="num">CVSS</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th><th>Reason</th></tr></thead><tbody>${components}</tbody></table></div>
-    </section>
-    <section>
-      <h2>What changed in the image</h2>
-      <h3>Image map</h3>
-      ${mapBars}
-      <p class="note">${image.map.map((m) => `${esc(m.release)}: file system from <code>${hex(m.kernel)}</code>, ${megabytes(m.bytes)} in total.`).join(" ")}</p>
-      <div class="columns">
-        <div class="table-box"><table><caption>Image measures</caption><thead><tr><th>Measure</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${facts}</tbody></table></div>
-        <div class="table-box"><table><caption>Main packages</caption><thead><tr><th>Package</th><th>${esc(device.old)}</th><th>${esc(device.new)}</th></tr></thead><tbody>${packages}</tbody></table></div>
-      </div>
-      <p>${number.format(image.packages_added.length)} packages added, ${number.format(image.packages_removed.length)} removed and ${number.format(image.packages_changed)} with a changed version.</p>
-      <div class="columns">
-        <div><h3>Packages added</h3>${list(image.packages_added)}</div>
-        <div><h3>Packages removed</h3>${list(image.packages_removed)}</div>
-        <div><h3>Programs added</h3>${list(image.programs_added)}</div>
-        <div><h3>Programs removed</h3>${list(image.programs_removed)}</div>
-      </div>
-      <h3>Default settings</h3>
-      ${configs}
-    </section>
-    <section>
-      <h2>How this was verified</h2>
-      <ul class="plain">${checks}</ul>
-      <p>Found a mistake? <a href="${REPOSITORY}/issues/new" target="_blank" rel="noopener">Open an issue on GitHub</a> with the evidence, or see the <a href="${REPOSITORY}" target="_blank" rel="noopener">code and full reports</a>.</p>
-      <h3>Limits</h3>
-      <ul class="plain">
-        <li>All of this is static analysis. Nothing was tested on a device.</li>
-        <li>The analysis covers the configuration shipped in the image, not an already configured router.</li>
-        <li>Installing packages or enabling features can make a CVE marked as outside this router relevant.</li>
-        <li>CVEs below CVSS 8.0 follow the automatic classification.</li>
-        <li>The kernel was read without the OpenWrt patches, except in manual reviews that mention them.</li>
-        <li>hostapd and wpad were not correlated, because they use dated snapshots.</li>
-      </ul>
-      <h3>Images analyzed</h3>
-      <div class="table-box"><table><caption>Provenance</caption><thead><tr><th>Version</th><th>Official image</th><th>SHA-256</th></tr></thead><tbody>${provenance}</tbody></table></div>
-    </section>`;
+      ${TABS.map(([key]) => `<div class="panel" role="tabpanel" id="panel-${key}" aria-labelledby="tab-${key}" tabindex="0"${key === activeTab ? "" : " hidden"}>${panels[key]}</div>`).join("")}
+    </div>`;
+  bindTabs();
   table.bind();
 }
 
@@ -467,7 +620,12 @@ document.addEventListener("pointermove", (event) => {
   }
 });
 
-document.getElementById("foot").textContent = `Independent project, not affiliated with OpenWrt, TP-Link or Xiaomi. We publish metadata, hashes and results, never the firmware images. CVEs consulted on ${DATA.consulted}. This product uses data from the NVD API but is not endorsed or certified by the NVD.`;
+document.getElementById("foot").innerHTML = `<div class="foot-links">
+    <a href="${REPOSITORY}" target="_blank" rel="noopener">GitHub</a>
+    <a href="${REPOSITORY}/issues/new" target="_blank" rel="noopener">Report a mistake</a>
+    <a href="${REPOSITORY}/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>
+  </div>
+  <p>Independent project, not affiliated with OpenWrt, TP-Link or Xiaomi. We publish metadata, hashes and results, never the firmware images. CVEs consulted on ${esc(DATA.consulted)}. This product uses data from the NVD API but is not endorsed or certified by the NVD.</p>`;
 addEventListener("hashchange", route);
 route();
 </script>
