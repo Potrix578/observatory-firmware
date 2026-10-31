@@ -1,0 +1,10 @@
+# Firmware images and kernel archives are analysed locally and never redistributed.
+firmware/
+.venv/
+__pycache__/
+*.pyc
+.claude/
+reports/cache/
+reports/*/*/
+reports/*/rea-evidence.bundle
+site/page.html

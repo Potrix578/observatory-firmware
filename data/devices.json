@@ -1,0 +1,4 @@
+{
+  "tplink_archer-c7-v5": {"name": "TP-Link Archer C7 v5", "target": "ath79/generic"},
+  "xiaomi_mi-router-4a-gigabit": {"name": "Xiaomi Mi Router 4A Gigabit", "target": "ramips/mt7621"}
+}

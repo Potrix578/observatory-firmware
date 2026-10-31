@@ -1,0 +1,158 @@
+{
+ "24.10.8": {
+  "components": {
+   "CVE-2026-62948": {
+    "status": "fixed",
+    "reason": "A árvore da tag v24.10.8 aplica a patch 0034-statefiles-escape-client-hostnames ao odhcpd, e o 40_dhcp.js da imagem já escapa o nome de host com '%h'.format."
+   },
+   "CVE-2026-62947": {
+    "status": "fixed",
+    "reason": "O commit 31cb3c89 do cgi-io incluído na imagem contém a correção 72990b7 (comparação de commits no GitHub)."
+   },
+   "CVE-2026-55490": {
+    "status": "not_applicable",
+    "reason": "Afeta o Emergency Access Daemon. O pacote ead não está nesta imagem."
+   },
+   "CVE-2025-26519": {
+    "status": "not_applicable",
+    "reason": "O descodificador EUC-KR está compilado fora: a patch 900-iconv_size_hack exige FULL_ICONV, que não é definido, e a string euckr não existe no libc.so da imagem."
+   },
+   "CVE-2025-60876": {
+    "status": "not_applicable",
+    "reason": "O applet wget do BusyBox não existe na imagem, nem como ligação nem como string no binário."
+   },
+   "CVE-2025-66442": {
+    "status": "not_applicable",
+    "reason": "Só ocorre com a otimização select-optimize do LLVM. O OpenWrt compila com GCC."
+   },
+   "CVE-2025-47203": {
+    "status": "not_applicable",
+    "reason": "Exige multihop no dbclient. O DROPBEAR_CLI_NETCAT está desligado e o binário só tem a forma de uso sem multihop."
+   },
+   "CVE-2025-14282": {
+    "status": "fixed",
+    "reason": "As patches 001 a 005 trazem da versão 2025.89 o abandono de privilégios após a autenticação, ativo por omissão. O registo no OSV aponta para outro commit, por isso a confirmação vem do CHANGES do Dropbear."
+   },
+   "CVE-2022-48174": {
+    "status": "likely_present",
+    "reason": "A correção d417193 não está na tag 1_36_1 e a árvore não tem backport. O ash está na imagem. O CVSS 9.8 é genérico: é preciso que o ash avalie uma expansão controlada pelo atacante, e não analisei se existe um caminho remoto."
+   },
+   "CVE-2023-42363": {
+    "status": "likely_present",
+    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+   },
+   "CVE-2023-42364": {
+    "status": "likely_present",
+    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+   },
+   "CVE-2023-42365": {
+    "status": "likely_present",
+    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+   },
+   "CVE-2023-42366": {
+    "status": "likely_present",
+    "reason": "O applet awk está na imagem e a árvore não tem patch. Exige um programa awk malicioso."
+   },
+   "CVE-2025-46394": {
+    "status": "likely_present",
+    "reason": "O applet tar está na imagem e a árvore não tem patch. Permite esconder nomes de ficheiros numa listagem."
+   }
+  },
+  "kernel": {
+   "CVE-2026-43198": {
+    "status": "no_security_impact",
+    "reason": "A correção falta (chega no 6.6.157), mas a corrida precisa de outro CPU a usar o socket filho. O kernel é compilado sem SMP e sem preempção, e este caminho corre em softirq, sem backlog para sockets em escuta."
+   },
+   "CVE-2026-64355": {
+    "status": "unused",
+    "reason": "A correção falta (chega no 6.6.145), mas a falha exige um programa XDP com devmap, e criar o devmap exige CAP_NET_ADMIN. A imagem não carrega XDP e nenhum driver compilado tem XDP nativo."
+   },
+   "CVE-2026-43083": {
+    "status": "unused",
+    "reason": "A correção falta (chega no 6.6.160), mas o caminho exige ioam6_enabled=1 e um namespace IOAM criado com permissão de administrador. O valor por omissão é 0, o OpenWrt não o altera e IPV6_IOAM6_LWTUNNEL está desligado."
+   },
+   "CVE-2025-71202": {
+    "status": "not_applicable",
+    "reason": "Só afeta sistemas com IOMMU SVA. CONFIG_IOMMU_SUPPORT e CONFIG_IOMMU_SVA estão desligados, iommu-sva.c não é compilado e a função alterada em mm/pgtable-generic.c não existe neste kernel."
+   },
+   "CVE-2026-64117": {
+    "status": "not_applicable",
+    "reason": "A leitura vulnerável não existe nos backports 6.12.96: nas séries estáveis, só entrou no mesmo lançamento que a corrige (6.6.160, 6.12.114, 6.18.57), apesar de a CNA indicar a falha desde o 6.4. A DWARF do mac80211.ko confirma o tamanho da função, sem essas linhas."
+   },
+   "CVE-2026-53091": {
+    "status": "no_security_impact",
+    "reason": "A correção falta (chega no 6.6.160), mas o risco está em drivers com TSO que leem os cabeçalhos diretamente. Nenhum código compilado ou módulo da imagem chama as funções tso_*, o ag71xx não anuncia TSO e os pacotes GSO malformados exigiriam tun, virtio ou AF_PACKET como root."
+   },
+   "CVE-2025-71072": {
+    "status": "likely_present",
+    "reason": "A correção falta (chega no 6.6.160) e o tmpfs está em uso. Exige um processo local e uma falha de memória do kernel durante um rename. Não encontrei caminho remoto, e todas as contas exceto root estão bloqueadas."
+   },
+   "CVE-2026-64368": {
+    "status": "not_applicable",
+    "reason": "Só ocorre com red zoning do SLUB. CONFIG_SLUB_DEBUG está desligado, por isso __slub_debug_enabled() devolve sempre falso e a condição nunca se verifica."
+   }
+  }
+ },
+ "25.12.6": {
+  "components": {
+   "CVE-2025-26519": {
+    "status": "not_applicable",
+    "reason": "O descodificador EUC-KR está compilado fora: a patch 900-iconv_size_hack exige FULL_ICONV, que não é definido, e a string euckr não existe no libc.so da imagem."
+   },
+   "CVE-2025-60876": {
+    "status": "not_applicable",
+    "reason": "O applet wget do BusyBox não existe na imagem, nem como ligação nem como string no binário."
+   },
+   "CVE-2025-66442": {
+    "status": "not_applicable",
+    "reason": "Só ocorre com a otimização select-optimize do LLVM. O OpenWrt compila com GCC."
+   },
+   "CVE-2026-22184": {
+    "status": "not_applicable",
+    "reason": "Afeta o utilitário untgz, que não está na imagem."
+   },
+   "CVE-2026-3381": {
+    "status": "not_applicable",
+    "reason": "Correspondência errada: afeta o módulo Perl Compress::Raw::Zlib, que não está na imagem."
+   },
+   "CVE-2026-27171": {
+    "status": "unused",
+    "reason": "O código existe na libz, mas o único binário que a usa, o apk, não importa crc32_combine."
+   },
+   "CVE-2026-76844": {
+    "status": "unused",
+    "reason": "O código existe na libz, mas o único binário que a usa, o apk, não importa funções gz*."
+   },
+   "CVE-2026-3706": {
+    "status": "no_security_impact",
+    "reason": "A correção fdec3c9 não está na versão 2025.89, mas o autor do Dropbear escreve no commit que não há impacto de segurança na forma como o SSH usa este código."
+   },
+   "CVE-2025-46394": {
+    "status": "likely_present",
+    "reason": "O applet tar está na imagem e a árvore não tem patch. Permite esconder nomes de ficheiros numa listagem."
+   }
+  },
+  "kernel": {
+   "CVE-2026-64024": {
+    "status": "likely_present",
+    "reason": "A correção só chega no 6.12.114 e tcp_tw_isn só é limpo em tcp_conn_request. Sem SMP, a variável por CPU é única, por isso o ISN previsível fica para o SYN seguinte de qualquer cliente. Afeta só TCP terminado no router. O firewall rejeita INPUT na WAN, por isso o alcance por omissão é a LAN. Não testado num dispositivo."
+   },
+   "CVE-2026-43083": {
+    "status": "unused",
+    "reason": "A correção falta (chega no 6.12.114), mas o caminho exige ioam6_enabled=1 e um namespace IOAM criado com permissão de administrador. O valor por omissão é 0, o OpenWrt não o altera e IPV6_IOAM6_LWTUNNEL está desligado."
+   },
+   "CVE-2025-71202": {
+    "status": "not_applicable",
+    "reason": "Só afeta sistemas com IOMMU SVA. CONFIG_IOMMU_SUPPORT e CONFIG_IOMMU_SVA estão desligados, iommu-sva.c não é compilado e a função alterada em mm/pgtable-generic.c não existe neste kernel."
+   },
+   "CVE-2026-64117": {
+    "status": "not_applicable",
+    "reason": "A leitura vulnerável não existe nos backports 6.18.55: nas séries estáveis, só entrou no mesmo lançamento que a corrige (6.6.160, 6.12.114, 6.18.57), apesar de a CNA indicar a falha desde o 6.4. A DWARF do mac80211.ko confirma o tamanho da função, sem essas linhas."
+   },
+   "CVE-2026-53091": {
+    "status": "no_security_impact",
+    "reason": "A correção falta (chega no 6.12.114), mas o risco está em drivers com TSO que leem os cabeçalhos diretamente. Nenhum código compilado ou módulo da imagem chama as funções tso_*, o ag71xx não anuncia TSO e os pacotes GSO malformados exigiriam tun, virtio ou AF_PACKET como root."
+   }
+  }
+ }
+}
