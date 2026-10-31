@@ -54,3 +54,7 @@ As imagens, os arquivos do kernel, as caches e os resultados intermédios ficam 
 ## Dados
 
 Este produto usa dados da API do NVD, mas não é aprovado nem certificado pelo NVD. Também usa dados do OSV e da Lista de CVE.
+
+## Licença
+
+O código está sob a licença MIT: ver `LICENSE`. As letras em `site/fonts` mantêm as suas próprias licenças, e os dados de terceiros seguem os termos das respetivas fontes.
